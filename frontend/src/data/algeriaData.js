@@ -75,11 +75,11 @@ export const wilayas = [
 // You can add the rest (08-15, 17-24, 26-30, 32-58) following this pattern.
 
 export const shippingRates = {
-    "16": { home: 400, desk: 200 }, // Alger
-    "31": { home: 500, desk: 250 }, // Oran
-    "25": { home: 500, desk: 250 }, // Constantine
-    "default": { home: 600, desk: 300 }, // Others
-    "south": { home: 900, desk: 400 } // Adrar, etc.
+    "16": { home: 400, desk: 0 }, // Alger
+    "31": { home: 500, desk: 0 }, // Oran
+    "25": { home: 500, desk: 0 }, // Constantine
+    "default": { home: 600, desk: 0 }, // Others
+    "south": { home: 900, desk: 0 } // Adrar, etc.
 };
 
 // Helper to determine rate based on code (simplified logic)

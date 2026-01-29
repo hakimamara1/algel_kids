@@ -14,7 +14,8 @@ const ProductDetails = () => {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [isWishlist, setIsWishlist] = useState(false);
-    const [showCheckout, setShowCheckout] = useState(false);
+
+
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -51,41 +52,9 @@ const ProductDetails = () => {
         setSelectedSize(null);
     };
 
-    const handleAddToCart = () => {
-        if (selectedColor && selectedColor.sizes && selectedColor.sizes.length > 0 && !selectedSize) {
-            alert('Please select a size first!');
-            return;
-        }
 
-        trackEvent('AddToCart', {
-            content_ids: [product._id],
-            content_name: product.title,
-            currency: 'DZD',
-            value: product.price,
-            variant: selectedColor ? selectedColor.name : null,
-            size: selectedSize ? selectedSize.value : null
-        });
 
-        const variantInfo = selectedColor ? `${selectedColor.name}` : '';
-        const sizeInfo = selectedSize ? `, ${selectedSize.value}` : '';
-        alert(`Added to Cart: ${product.title} ${variantInfo}${sizeInfo}`);
-    };
 
-    const handleBuyNow = () => {
-        if (selectedColor && selectedColor.sizes && selectedColor.sizes.length > 0 && !selectedSize) {
-            alert('Please select a size first!');
-            return;
-        }
-
-        trackEvent('InitiateCheckout', {
-            content_ids: [product._id],
-            content_name: product.title,
-            currency: 'DZD',
-            value: product.price
-        });
-
-        setShowCheckout(true);
-    };
 
     if (loading || !product) {
         return (
@@ -284,62 +253,14 @@ const ProductDetails = () => {
                 </div>
             </div>
 
-            {/* Sticky Action Footer */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-40 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] safe-area-bottom">
-                <div className="max-w-7xl mx-auto flex gap-3">
-                    <button
-                        onClick={handleBuyNow}
-                        className="flex-[1.5] bg-pink-500 text-white py-3.5 rounded-2xl font-bold text-base shadow-lg shadow-pink-200 active:bg-pink-600 transition-all flex flex-col items-center justify-center leading-none"
-                    >
-                        <span>Buy Now</span>
-                        <span className="text-[10px] opacity-90 font-medium tracking-wide mt-0.5">CASH ON DELIVERY</span>
-                    </button>
-                </div>
+            {/* Inline Checkout Form */}
+            <div id="checkout-section" className="px-4 pb-10 max-w-2xl mx-auto">
+                <CheckoutForm
+                    product={product}
+                    variant={{ color: selectedColor, size: selectedSize }}
+                    onClose={() => { }}
+                />
             </div>
-
-            {/* Checkout Modal */}
-            <AnimatePresence>
-                {showCheckout && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-end md:items-center justify-center sm:p-4"
-                    >
-                        {/* Backdrop */}
-                        <div
-                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                            onClick={() => setShowCheckout(false)}
-                        />
-
-                        {/* Modal Content */}
-                        <motion.div
-                            initial={{ y: "100%" }}
-                            animate={{ y: 0 }}
-                            exit={{ y: "100%" }}
-                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                            className="relative w-full max-w-lg bg-white rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
-                        >
-                            <div className="sticky top-0 right-0 z-10 flex justify-end p-4 bg-gradient-to-b from-white to-transparent pointer-events-none">
-                                <button
-                                    onClick={() => setShowCheckout(false)}
-                                    className="pointer-events-auto bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition-colors"
-                                >
-                                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <CheckoutForm
-                                product={product}
-                                variant={{ color: selectedColor, size: selectedSize }}
-                                onClose={() => setShowCheckout(false)}
-                            />
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     );
 };
