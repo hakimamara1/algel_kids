@@ -22,10 +22,12 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => console.error('MongoDB Connection Error:', err));
 
 const uploadRoutes = require('./routes/uploadRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 // Routes
 app.use('/api/products', productRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Health Check
 app.get('/', (req, res) => {

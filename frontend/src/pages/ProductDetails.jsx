@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ImageCarousel from '../components/ImageCarousel';
+import CheckoutForm from '../components/CheckoutForm';
 import { trackEvent } from '../utils/FacebookPixel';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -13,16 +14,16 @@ const ProductDetails = () => {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [isWishlist, setIsWishlist] = useState(false);
+    const [showCheckout, setShowCheckout] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
             try {
                 setLoading(true);
-                // Note: Using the IP from the previous context, ensuring it matches your setup
+                // Note: Using the IP from previous context
                 const { data } = await axios.get(`http://192.168.179.237:5002/api/products/${id}`);
                 setProduct(data);
 
-                // Select first color by default
                 if (data.colors && data.colors.length > 0) {
                     setSelectedColor(data.colors[0]);
                 }
@@ -32,7 +33,7 @@ const ProductDetails = () => {
                 trackEvent('ViewContent', {
                     content_ids: [data._id],
                     content_name: data.title,
-                    currency: 'USD',
+                    currency: 'DZD',
                     value: data.price
                 });
 
@@ -50,27 +51,40 @@ const ProductDetails = () => {
         setSelectedSize(null);
     };
 
-    const handleAddToCart = (isBuyNow = false) => {
+    const handleAddToCart = () => {
         if (selectedColor && selectedColor.sizes && selectedColor.sizes.length > 0 && !selectedSize) {
             alert('Please select a size first!');
             return;
         }
 
-        trackEvent(isBuyNow ? 'InitiateCheckout' : 'AddToCart', {
+        trackEvent('AddToCart', {
             content_ids: [product._id],
             content_name: product.title,
-            currency: 'USD',
+            currency: 'DZD',
             value: product.price,
             variant: selectedColor ? selectedColor.name : null,
             size: selectedSize ? selectedSize.value : null
         });
 
-        const actionText = isBuyNow ? 'Proceeding to Buy' : 'Added to Cart';
         const variantInfo = selectedColor ? `${selectedColor.name}` : '';
         const sizeInfo = selectedSize ? `, ${selectedSize.value}` : '';
+        alert(`Added to Cart: ${product.title} ${variantInfo}${sizeInfo}`);
+    };
 
-        alert(`${actionText}: ${product.title} ${variantInfo}${sizeInfo}`);
-        // Logic for actual cart/checkout redirection would go here
+    const handleBuyNow = () => {
+        if (selectedColor && selectedColor.sizes && selectedColor.sizes.length > 0 && !selectedSize) {
+            alert('Please select a size first!');
+            return;
+        }
+
+        trackEvent('InitiateCheckout', {
+            content_ids: [product._id],
+            content_name: product.title,
+            currency: 'DZD',
+            value: product.price
+        });
+
+        setShowCheckout(true);
     };
 
     if (loading || !product) {
@@ -81,7 +95,6 @@ const ProductDetails = () => {
         );
     }
 
-    // Determine images
     const displayImages = (selectedColor?.images && selectedColor.images.length > 0)
         ? selectedColor.images
         : (product.images || []);
@@ -91,8 +104,7 @@ const ProductDetails = () => {
     const discount = product.compareAtPrice ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100) : 0;
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans pb-24">
-            {/* Top Navigation Placeholder (Back Button) */}
+        <div className="min-h-screen bg-gray-50 font-sans pb-24 relative">
             {/* Top Header */}
             <div className="fixed top-0 left-0 right-0 z-40 px-4 py-3 flex items-center justify-between pointer-events-none">
                 {/* Back Button */}
@@ -110,7 +122,7 @@ const ProductDetails = () => {
                     initial={{ y: -30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="absolute left-0 right-0 flex justify-center pointer-events-none -z-12"
+                    className="absolute left-0 right-0 flex justify-center pointer-events-none -z-10"
                 >
                     <div className="bg-white/80 backdrop-blur-md px-6 py-2 rounded-full shadow-sm border border-white/40">
                         <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-pink-500 to-sky-500 bg-clip-text text-transparent">
@@ -119,17 +131,14 @@ const ProductDetails = () => {
                     </div>
                 </motion.div>
 
-                {/* Visual Spacer for balance */}
+                {/* Visual Spacer */}
                 <div className="w-10"></div>
             </div>
 
             {/* Hero Image Section */}
             <div className="relative w-full bg-white rounded-b-[2rem] shadow-sm overflow-hidden z-20">
                 <div className="relative">
-                    {/* Wrapping Carousel for Wishlist Overlay */}
                     <ImageCarousel images={displayImages} />
-
-                    {/* Wishlist Button */}
                     <button
                         onClick={() => setIsWishlist(!isWishlist)}
                         className="absolute top-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-sm active:scale-95 transition-transform"
@@ -162,9 +171,9 @@ const ProductDetails = () => {
 
                 {/* Price & Stock */}
                 <div className="flex items-center space-x-3 mb-6">
-                    <span className="text-3xl font-extrabold text-pink-500">${product.price}</span>
+                    <span className="text-3xl font-extrabold text-pink-500">{product.price} DA</span>
                     {product.compareAtPrice && (
-                        <span className="text-lg text-gray-400 line-through decoration-gray-400">${product.compareAtPrice}</span>
+                        <span className="text-lg text-gray-400 line-through decoration-gray-400">{product.compareAtPrice} DA</span>
                     )}
                     <div className="ml-auto flex items-center space-x-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
                         <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
@@ -187,7 +196,6 @@ const ProductDetails = () => {
                                         onClick={() => handleColorChange(color)}
                                         className={`group relative w-12 h-12 rounded-full focus:outline-none transition-transform active:scale-95 ${selectedColor?.name === color.name ? 'ring-2 ring-offset-2 ring-pink-500' : ''
                                             }`}
-                                        title={color.name}
                                     >
                                         <span
                                             className="block w-full h-full rounded-full border border-black/10 shadow-inner"
@@ -211,9 +219,6 @@ const ProductDetails = () => {
                                 <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
                                     Select Age / Size
                                 </span>
-                                <button className="text-xs text-pink-500 font-medium underline">
-                                    Size Guide
-                                </button>
                             </div>
                             <div className="grid grid-cols-4 gap-3">
                                 {selectedColor.sizes.map((size) => {
@@ -280,19 +285,10 @@ const ProductDetails = () => {
             </div>
 
             {/* Sticky Action Footer */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] safe-area-bottom">
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-40 shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] safe-area-bottom">
                 <div className="max-w-7xl mx-auto flex gap-3">
                     <button
-                        onClick={() => handleAddToCart(false)}
-                        className="flex-1 bg-white border-2 border-pink-100 text-pink-600 py-3.5 rounded-2xl font-bold text-base shadow-sm active:bg-pink-50 transition-colors flex items-center justify-center gap-2"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        Add to Cart
-                    </button>
-                    <button
-                        onClick={() => handleAddToCart(true)}
+                        onClick={handleBuyNow}
                         className="flex-[1.5] bg-pink-500 text-white py-3.5 rounded-2xl font-bold text-base shadow-lg shadow-pink-200 active:bg-pink-600 transition-all flex flex-col items-center justify-center leading-none"
                     >
                         <span>Buy Now</span>
@@ -300,6 +296,50 @@ const ProductDetails = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Checkout Modal */}
+            <AnimatePresence>
+                {showCheckout && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-end md:items-center justify-center sm:p-4"
+                    >
+                        {/* Backdrop */}
+                        <div
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                            onClick={() => setShowCheckout(false)}
+                        />
+
+                        {/* Modal Content */}
+                        <motion.div
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            exit={{ y: "100%" }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            className="relative w-full max-w-lg bg-white rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+                        >
+                            <div className="sticky top-0 right-0 z-10 flex justify-end p-4 bg-gradient-to-b from-white to-transparent pointer-events-none">
+                                <button
+                                    onClick={() => setShowCheckout(false)}
+                                    className="pointer-events-auto bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition-colors"
+                                >
+                                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <CheckoutForm
+                                product={product}
+                                variant={{ color: selectedColor, size: selectedSize }}
+                                onClose={() => setShowCheckout(false)}
+                            />
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
