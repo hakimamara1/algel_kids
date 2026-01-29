@@ -26,7 +26,7 @@ const AdminProductEdit = () => {
 
     const fetchProduct = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:5002/api/products/${id}`);
+            const { data } = await axios.get(`http://192.168.179.237:5002/api/products/${id}`);
             setTitle(data.title);
             setPrice(data.price);
             setDescription(data.description);
@@ -47,7 +47,7 @@ const AdminProductEdit = () => {
 
         try {
             const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-            const { data } = await axios.post('http://localhost:5002/api/upload', formData, config);
+            const { data } = await axios.post('http://192.168.179.237:5002/api/upload', formData, config);
 
             const newImage = { publicId: data.publicId, url: data.url };
 
@@ -81,9 +81,9 @@ const AdminProductEdit = () => {
 
         try {
             if (isEdit) {
-                await axios.put(`http://localhost:5002/api/products/${id}`, productData);
+                await axios.put(`http://192.168.179.237:5002/api/products/${id}`, productData);
             } else {
-                await axios.post('http://localhost:5002/api/products', productData);
+                await axios.post('http://192.168.179.237:5002/api/products', productData);
             }
             navigate('/admin');
         } catch (error) {

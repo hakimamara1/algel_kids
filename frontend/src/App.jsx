@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import HomePage from './pages/HomePage';
 import ProductDetails from './pages/ProductDetails';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminOrders from './pages/AdminOrders';
 import AdminProductEdit from './pages/AdminProductEdit';
 import { initPixel, trackPageView } from './utils/FacebookPixel';
 
@@ -28,7 +29,16 @@ function App() {
           <Route path="/product/:id" element={<ProductDetails />} />
 
           {/* Admin Routes */}
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
+          } />
+          <Route path="/admin/orders" element={
+            <AdminLayout>
+              <AdminOrders />
+            </AdminLayout>
+          } />
           <Route path="/admin/product/new" element={<AdminProductEdit />} />
           <Route path="/admin/product/:id/edit" element={<AdminProductEdit />} />
         </Routes>
@@ -36,5 +46,20 @@ function App() {
     </Router>
   );
 }
+
+// Simple Layout for Admin Navigation
+const AdminLayout = ({ children }) => {
+  return (
+    <div>
+      <div className="bg-white border-b border-gray-200 px-6 py-4 flex space-x-6 sticky top-0 z-30">
+        <a href="/admin" className="font-bold text-gray-900 hover:text-pink-500">Products</a>
+        <a href="/admin/orders" className="font-bold text-gray-900 hover:text-pink-500">Orders</a>
+        <a href="/" className="ml-auto text-sm text-gray-500 hover:text-gray-900">View Shop</a>
+      </div>
+      {children}
+    </div>
+  );
+};
+
 
 export default App;

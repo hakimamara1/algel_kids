@@ -12,7 +12,7 @@ const AdminDashboard = () => {
 
     const fetchProducts = async () => {
         try {
-            const { data } = await axios.get('http://localhost:5002/api/products');
+            const { data } = await axios.get('http://192.168.179.237:5002/api/products');
             setProducts(data);
             setLoading(false);
         } catch (error) {
@@ -24,7 +24,7 @@ const AdminDashboard = () => {
     const deleteHandler = async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
-                await axios.delete(`http://localhost:5002/api/products/${id}`);
+                await axios.delete(`http://192.168.179.237:5002/api/products/${id}`);
                 fetchProducts(); // Refresh list
             } catch (error) {
                 console.error('Error deleting product:', error);
