@@ -75,17 +75,7 @@ const ProductDetails = () => {
     return (
         <div className="min-h-screen bg-gray-50 font-sans pb-24 relative">
             {/* Top Header */}
-            <div className="fixed top-0 left-0 right-0 z-40 px-4 py-3 flex items-center justify-between pointer-events-none">
-                {/* Back Button */}
-                <button
-                    onClick={() => navigate(-1)}
-                    className="pointer-events-auto bg-white/90 backdrop-blur-xl p-2.5 rounded-full shadow-sm text-gray-700 active:scale-95 transition-all border border-white/20"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-
+            <div className=" fixed top-0 left-0 right-0 z-40 px-4 py-3 flex items-center ">
                 {/* Animated Logo Text */}
                 <motion.div
                     initial={{ y: -30, opacity: 0 }}
@@ -94,34 +84,21 @@ const ProductDetails = () => {
                     className="absolute left-0 right-0 flex justify-center pointer-events-none -z-10"
                 >
                     <div className="bg-white/80 backdrop-blur-md px-6 py-2 rounded-full shadow-sm border border-white/40">
-                        <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-pink-500 to-sky-500 bg-clip-text text-transparent">
+                        <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-pink-500 to-sky-700 bg-clip-text text-transparent">
                             Angel Kids
                         </span>
                     </div>
                 </motion.div>
 
                 {/* Visual Spacer */}
-                <div className="w-10"></div>
+
             </div>
 
             {/* Hero Image Section */}
             <div className="relative w-full bg-white rounded-b-[2rem] shadow-sm overflow-hidden z-20">
                 <div className="relative">
                     <ImageCarousel images={displayImages} />
-                    <button
-                        onClick={() => setIsWishlist(!isWishlist)}
-                        className="absolute top-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-sm active:scale-95 transition-transform"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className={`h-6 w-6 transition-colors ${isWishlist ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </button>
+
                 </div>
             </div>
 

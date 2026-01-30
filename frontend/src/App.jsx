@@ -17,7 +17,7 @@ const PageViewTracker = () => {
 function App() {
   useEffect(() => {
     // Initialize Pixel with your ID (Replace with env variable or real ID)
-    initPixel('YOUR-PIXEL-ID-HERE');
+    initPixel('1190930022111249');
     trackPageView(); // Initial load
   }, []);
 
