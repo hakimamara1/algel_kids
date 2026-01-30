@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5002;
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://192.168.179.237:5173', 'algel-kids.vercel.app'],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://192.168.179.237:5173', 'https://algel-kids.vercel.app'],
   credentials: true
 }));
 app.use(cookieParser());

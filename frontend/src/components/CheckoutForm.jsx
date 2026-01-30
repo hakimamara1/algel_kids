@@ -80,7 +80,7 @@ const CheckoutForm = ({ product, variant, onClose }) => {
         };
 
         try {
-            await axios.post('http://192.168.179.237:5002/api/orders', orderData);
+            await axios.post('https://algel-kids.onrender.com/api/orders', orderData);
 
             trackEvent('Purchase', {
                 currency: 'DZD',
