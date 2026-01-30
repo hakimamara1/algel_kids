@@ -22,7 +22,7 @@ const ProductDetails = () => {
             try {
                 setLoading(true);
                 // Note: Using the IP from previous context
-                const { data } = await axios.get(`https://algel-kids.onrender.com/api/products/${id}`);
+                const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
                 setProduct(data);
 
                 if (data.colors && data.colors.length > 0) {

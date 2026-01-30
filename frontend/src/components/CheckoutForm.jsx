@@ -80,7 +80,7 @@ const CheckoutForm = ({ product, variant, onClose }) => {
         };
 
         try {
-            await axios.post('https://algel-kids.onrender.com/api/orders', orderData);
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/orders`, orderData);
 
             trackEvent('Purchase', {
                 currency: 'DZD',

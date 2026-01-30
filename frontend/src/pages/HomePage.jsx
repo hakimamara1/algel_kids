@@ -10,7 +10,7 @@ const HomePage = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('https://algel-kids.onrender.com/api/products');
+                const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
                 setProducts(data);
                 setLoading(false);
             } catch (err) {

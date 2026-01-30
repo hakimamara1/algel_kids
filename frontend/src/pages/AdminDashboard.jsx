@@ -12,7 +12,7 @@ const AdminDashboard = () => {
 
     const fetchProducts = async () => {
         try {
-            const { data } = await axios.get('https://algel-kids.onrender.com/api/products');
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
             setProducts(data);
             setLoading(false);
         } catch (error) {
@@ -24,7 +24,7 @@ const AdminDashboard = () => {
     const deleteHandler = async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
-                await axios.delete(`https://algel-kids.onrender.com/api/products/${id}`);
+                await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
                 fetchProducts(); // Refresh list
             } catch (error) {
                 console.error('Error deleting product:', error);

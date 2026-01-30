@@ -26,7 +26,7 @@ const AdminProductEdit = () => {
 
     const fetchProduct = async () => {
         try {
-            const { data } = await axios.get(`https://algel-kids.onrender.com/api/products/${id}`);
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
             setTitle(data.title);
             setPrice(data.price);
             setDescription(data.description);
@@ -47,7 +47,7 @@ const AdminProductEdit = () => {
 
         try {
             const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-            const { data } = await axios.post('https://algel-kids.onrender.com/api/upload', formData, config);
+            const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/upload`, formData, config);
 
             const newImage = { publicId: data.publicId, url: data.url };
 
@@ -81,9 +81,9 @@ const AdminProductEdit = () => {
 
         try {
             if (isEdit) {
-                await axios.put(`https://algel-kids.onrender.com/api/products/${id}`, productData);
+                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`, productData);
             } else {
-                await axios.post('https://algel-kids.onrender.com/api/products', productData);
+                await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products`, productData);
             }
             navigate('/admin');
         } catch (error) {

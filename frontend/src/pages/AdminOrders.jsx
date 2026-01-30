@@ -12,7 +12,7 @@ const AdminOrders = () => {
     const fetchOrders = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get('https://algel-kids.onrender.com/api/orders');
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/orders`);
             setOrders(data);
             setLoading(false);
         } catch (error) {
@@ -28,7 +28,7 @@ const AdminOrders = () => {
     // Handlers
     const handleStatusUpdate = async (id, newStatus) => {
         try {
-            await axios.put(`https://algel-kids.onrender.com/api/orders/${id}/status`, { status: newStatus });
+            await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/orders/${id}/status`, { status: newStatus });
             fetchOrders(); // Refresh
         } catch (error) {
             alert('Failed to update status');
@@ -39,7 +39,7 @@ const AdminOrders = () => {
         if (!confirm(`Send order for ${order.customer.name} to Delivery Provider?`)) return;
 
         try {
-            const { data } = await axios.post(`https://algel-kids.onrender.com/api/orders/${order._id}/delivery`);
+            const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/orders/${order._id}/delivery`);
             alert(`Success: ${data.message} (Tracking: ${data.result.trackingCode})`);
             fetchOrders();
         } catch (error) {

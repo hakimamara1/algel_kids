@@ -7,11 +7,11 @@ const productRoutes = require('./routes/productRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5002;
-
+const url_front = process.env.VITE_FRONTEND_URL;
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://192.168.179.237:5173', 'https://algel-kids.vercel.app'],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://192.168.179.237:5173', 'https://algel-kids.vercel.app', url_front],
   credentials: true
 }));
 app.use(cookieParser());
