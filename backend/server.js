@@ -7,11 +7,10 @@ const productRoutes = require('./routes/productRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5002;
-const url_front = process.env.VITE_FRONTEND_URL;
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://192.168.179.237:5173', 'https://algel-kids.vercel.app', url_front],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://192.168.179.237:5173', 'https://algel-kids.vercel.app', 'https://algel-kids-git-checkout-hakimamara20242023-6761s-projects.vercel.app', 'https://algel-kids-git-main-hakimamara20242023-6761s-projects.vercel.app'],
   credentials: true
 }));
 app.use(cookieParser());
