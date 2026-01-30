@@ -10,7 +10,7 @@ const HomePage = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('http://192.168.179.237:5002/api/products');
+                const { data } = await axios.get('https://algel-kids.onrender.com/api/products');
                 setProducts(data);
                 setLoading(false);
             } catch (err) {

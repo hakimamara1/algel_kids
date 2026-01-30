@@ -81,9 +81,9 @@ const AdminProductEdit = () => {
 
         try {
             if (isEdit) {
-                await axios.put(`http://192.168.179.237:5002/api/products/${id}`, productData);
+                await axios.put(`https://algel-kids.onrender.com/api/products/${id}`, productData);
             } else {
-                await axios.post('http://192.168.179.237:5002/api/products', productData);
+                await axios.post('https://algel-kids.onrender.com/api/products', productData);
             }
             navigate('/admin');
         } catch (error) {
