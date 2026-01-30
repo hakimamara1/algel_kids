@@ -6,6 +6,9 @@ export default {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['Cairo', 'sans-serif'],
+            },
             colors: {
                 primary: '#FFC0CB', // Pink for girls
                 secondary: '#FFFFFF',

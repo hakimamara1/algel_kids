@@ -133,20 +133,20 @@ const ProductDetails = () => {
                     </h1>
                     {discount > 0 && (
                         <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-lg uppercase tracking-wide whitespace-nowrap">
-                            -{discount}% OFF
+                            -{discount}% تخفيض
                         </span>
                     )}
                 </div>
 
                 {/* Price & Stock */}
-                <div className="flex items-center space-x-3 mb-6">
-                    <span className="text-3xl font-extrabold text-pink-500">{product.price} DA</span>
+                <div className="flex items-center space-x-3 space-x-reverse mb-6">
+                    <span className="text-3xl font-extrabold text-pink-500">{product.price} د.ج</span>
                     {product.compareAtPrice && (
-                        <span className="text-lg text-gray-400 line-through decoration-gray-400">{product.compareAtPrice} DA</span>
+                        <span className="text-lg text-gray-400 line-through decoration-gray-400">{product.compareAtPrice} د.ج</span>
                     )}
-                    <div className="ml-auto flex items-center space-x-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
+                    <div className="mr-auto flex items-center space-x-1 space-x-reverse text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
                         <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                        <span>In Stock</span>
+                        <span>متوفر</span>
                     </div>
                 </div>
 
@@ -156,7 +156,7 @@ const ProductDetails = () => {
                     {hasColors && (
                         <div>
                             <span className="block text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                                Select Color
+                                اختر اللون
                             </span>
                             <div className="flex flex-wrap gap-4">
                                 {product.colors.map((color) => (
@@ -171,7 +171,7 @@ const ProductDetails = () => {
                                             style={{ backgroundColor: color.hexCode }}
                                         />
                                         {selectedColor?.name === color.name && (
-                                            <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-[10px] font-medium text-gray-600 whitespace-nowrap bg-white px-1 rounded shadow-sm z-10">
+                                            <span className="absolute -bottom-6 left-1/2 transform translate-x-1/2 text-[10px] font-medium text-gray-600 whitespace-nowrap bg-white px-1 rounded shadow-sm z-10">
                                                 {color.name}
                                             </span>
                                         )}
@@ -186,7 +186,7 @@ const ProductDetails = () => {
                         <div>
                             <div className="flex justify-between items-center mb-3">
                                 <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                                    Select Age / Size
+                                    اختر المقاس / العمر
                                 </span>
                             </div>
                             <div className="grid grid-cols-4 gap-3">
@@ -225,7 +225,7 @@ const ProductDetails = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                         </div>
-                        <span className="text-[10px] font-bold text-sky-800 uppercase leading-tight">Cash on<br />Delivery</span>
+                        <span className="text-[10px] font-bold text-sky-800 uppercase leading-tight">الدفع عند<br />الاستلام</span>
                     </div>
                     <div className="bg-indigo-50 p-3 rounded-xl flex flex-col items-center justify-center text-center space-y-1">
                         <div className="bg-white p-2 rounded-full text-indigo-500 mb-1 shadow-sm">
@@ -234,7 +234,7 @@ const ProductDetails = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 012-2 2 2 0 012 2m10 0a2 2 0 012-2 2 2 0 012 2M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
                             </svg>
                         </div>
-                        <span className="text-[10px] font-bold text-indigo-800 uppercase leading-tight">Fast<br />Delivery</span>
+                        <span className="text-[10px] font-bold text-indigo-800 uppercase leading-tight">توصيل<br />سريع</span>
                     </div>
                     <div className="bg-mint-50 bg-green-50 p-3 rounded-xl flex flex-col items-center justify-center text-center space-y-1">
                         <div className="bg-white p-2 rounded-full text-green-500 mb-1 shadow-sm">
@@ -242,13 +242,13 @@ const ProductDetails = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <span className="text-[10px] font-bold text-green-800 uppercase leading-tight">Easy<br />Returns</span>
+                        <span className="text-[10px] font-bold text-green-800 uppercase leading-tight">سهولة<br />الاسترجاع</span>
                     </div>
                 </div>
 
                 {/* Description */}
                 <div className="prose prose-sm prose-pink text-gray-600 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                    <h3 className="text-gray-900 font-bold mb-2">Product Description</h3>
+                    <h3 className="text-gray-900 font-bold mb-2">وصف المنتج</h3>
                     <p className="whitespace-pre-line leading-relaxed">{product.description}</p>
                 </div>
             </div>
@@ -273,7 +273,7 @@ const ProductDetails = () => {
 
             {/* Contact Us Section */}
             <div className="text-center pb-12">
-                <h3 className="text-gray-500 font-medium mb-4 text-sm uppercase tracking-widest">Questions? Contact Us</h3>
+                <h3 className="text-gray-500 font-medium mb-4 text-sm uppercase tracking-widest">لديك سؤال؟ اتصل بنا</h3>
                 <div className="flex justify-center space-x-6">
                     <a href="https://web.facebook.com/profile.php?id=61585734486877" className="bg-white p-3 rounded-full shadow-sm text-blue-600 hover:scale-110 transition-transform">
                         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
