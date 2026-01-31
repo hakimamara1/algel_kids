@@ -1,11 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import ProductDetails from './pages/ProductDetails';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminOrders from './pages/AdminOrders';
-import AdminProductEdit from './pages/AdminProductEdit';
 import { initPixel, trackPageView } from './utils/FacebookPixel';
+
+// Lazy load all page components for code splitting
+const HomePage = lazy(() => import('./pages/HomePage'));
+const ProductDetails = lazy(() => import('./pages/ProductDetails'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdminOrders = lazy(() => import('./pages/AdminOrders'));
+const AdminProductEdit = lazy(() => import('./pages/AdminProductEdit'));
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500 mx-auto mb-4"></div>
+      <p className="text-gray-600">جاري التحميل...</p>
+    </div>
+  </div>
+);
 
 // Helper to track page views on route change
 const PageViewTracker = () => {
@@ -24,24 +36,26 @@ function App() {
   return (
     <Router>
       <div className="font-sans antialiased text-gray-900">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={
-            <AdminLayout>
-              <AdminDashboard />
-            </AdminLayout>
-          } />
-          <Route path="/admin/orders" element={
-            <AdminLayout>
-              <AdminOrders />
-            </AdminLayout>
-          } />
-          <Route path="/admin/product/new" element={<AdminProductEdit />} />
-          <Route path="/admin/product/:id/edit" element={<AdminProductEdit />} />
-        </Routes>
+            {/* Admin Routes */}
+            <Route path="/admin" element={
+              <AdminLayout>
+                <AdminDashboard />
+              </AdminLayout>
+            } />
+            <Route path="/admin/orders" element={
+              <AdminLayout>
+                <AdminOrders />
+              </AdminLayout>
+            } />
+            <Route path="/admin/product/new" element={<AdminProductEdit />} />
+            <Route path="/admin/product/:id/edit" element={<AdminProductEdit />} />
+          </Routes>
+        </Suspense>
       </div>
     </Router>
   );

@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5002;
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://192.168.179.237:5173', 'https://algel-kids.vercel.app', 'https://algel-kids-git-checkout-hakimamara20242023-6761s-projects.vercel.app', 'https://algel-kids-git-main-hakimamara20242023-6761s-projects.vercel.app'],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://192.168.179.237:5173', 'https://algel-kids.vercel.app', 'https://algel-kids-git-checkout-hakimamara20242023-6761s-projects.vercel.app', 'https://algel-kids-git-main-hakimamara20242023-6761s-projects.vercel.app', 'http://localhost:4174'],
   credentials: true
 }));
 app.use(cookieParser());

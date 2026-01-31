@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { wilayas, getShippingRate } from '../data/algeriaData';
 import { trackEvent } from '../utils/FacebookPixel';
 
-const CheckoutForm = ({ product, variant, onClose }) => {
+const CheckoutForm = React.memo(({ product, variant, onClose }) => {
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
@@ -17,14 +17,21 @@ const CheckoutForm = ({ product, variant, onClose }) => {
     const [submitStatus, setSubmitStatus] = useState('idle'); // idle, submitting, success, error
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Shipping Calculation
-    const selectedWilayaData = wilayas.find(w => w.name === formData.wilaya);
+    // Shipping Calculation (memoized to prevent recalculation on every render)
+    const selectedWilayaData = useMemo(
+        () => wilayas.find(w => w.name === formData.wilaya),
+        [formData.wilaya]
+    );
+
     const wilayaCode = selectedWilayaData ? selectedWilayaData.code : 'default';
-    const rates = getShippingRate(wilayaCode);
+    const rates = useMemo(() => getShippingRate(wilayaCode), [wilayaCode]);
     const shippingPrice = formData.deliveryType === 'home' ? rates.home : rates.desk;
 
     // Total Calculation
-    const totalPrice = product.price + shippingPrice;
+    const totalPrice = useMemo(
+        () => product.price + shippingPrice,
+        [product.price, shippingPrice]
+    );
 
     useEffect(() => {
         if (selectedWilayaData) {
@@ -35,17 +42,17 @@ const CheckoutForm = ({ product, variant, onClose }) => {
         }
     }, [formData.wilaya]);
 
-    const handlePhoneChange = (e) => {
+    const handlePhoneChange = useCallback((e) => {
         const val = e.target.value.replace(/\D/g, ''); // Only numbers
         if (val.length <= 10) {
-            setFormData({ ...formData, phone: val });
+            setFormData(prev => ({ ...prev, phone: val }));
         }
-    };
+    }, []);
 
-    const validatePhone = (phone) => {
+    const validatePhone = useCallback((phone) => {
         const regex = /^(05|06|07)[0-9]{8}$/;
         return regex.test(phone);
-    };
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -246,6 +253,8 @@ const CheckoutForm = ({ product, variant, onClose }) => {
             </button>
         </form>
     );
-};
+});
+
+CheckoutForm.displayName = 'CheckoutForm';
 
 export default CheckoutForm;
