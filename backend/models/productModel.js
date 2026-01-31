@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema({
     slug: { type: String, required: true, unique: true },
     description: { type: String },
     price: { type: Number, required: true },
+    compareAtPrice: { type: Number },
     category: { type: String, default: 'girls-clothing' },
     images: [imageSchema],
     colors: [colorSchema],

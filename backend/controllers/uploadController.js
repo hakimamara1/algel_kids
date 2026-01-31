@@ -44,7 +44,7 @@ const uploadImage = async (req, res) => {
         if (req.file && req.file.path) {
             fs.unlinkSync(req.file.path);
         }
-        res.status(500).json({ message: 'Image upload failed' });
+        res.status(500).json({ message: 'Image upload failed', error: error.message, stack: error.stack });
     }
 };
 

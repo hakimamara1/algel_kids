@@ -62,7 +62,8 @@ const AdminProductEdit = () => {
         } catch (error) {
             console.error(error);
             setUploading(false);
-            alert('Image Upload Failed');
+            const errorMsg = error.response?.data?.message || error.response?.data?.error || error.message || 'Image Upload Failed';
+            alert(`Error: ${errorMsg}`);
         }
     };
 

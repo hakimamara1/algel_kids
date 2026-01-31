@@ -35,6 +35,14 @@ const upload = multer({
 });
 
 // Route
-router.post('/', upload.single('image'), uploadImage);
+router.post('/', (req, res, next) => {
+    upload.single('image')(req, res, (err) => {
+        if (err) {
+            // Check if it's a specific Multer error or our custom string error
+            return res.status(400).json({ message: err.message || err });
+        }
+        next();
+    });
+}, uploadImage);
 
 module.exports = router;
