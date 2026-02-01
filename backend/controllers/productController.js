@@ -1,4 +1,5 @@
 const Product = require('../models/productModel');
+const { invalidateProduct, invalidateAllProducts } = require('../utils/cacheInvalidation');
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -44,6 +45,10 @@ const createProduct = async (req, res) => {
         // Basic creation logic - in real app would handle image uploads here or via separate endpoint
         const product = new Product(req.body);
         const createdProduct = await product.save();
+
+        // Invalidate product list cache
+        await invalidateAllProducts();
+
         res.status(201).json(createdProduct);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -59,6 +64,11 @@ const deleteProduct = async (req, res) => {
 
         if (product) {
             await product.deleteOne();
+
+            // Invalidate both specific product and list cache
+            await invalidateProduct(req.params.id);
+            await invalidateAllProducts();
+
             res.json({ message: 'Product removed' });
         } else {
             res.status(404).json({ message: 'Product not found' });
@@ -95,6 +105,11 @@ const updateProduct = async (req, res) => {
             product.colors = req.body.colors || product.colors;
 
             const updatedProduct = await product.save();
+
+            // Invalidate both specific product and list cache
+            await invalidateProduct(req.params.id);
+            await invalidateAllProducts();
+
             res.json(updatedProduct);
         } else {
             res.status(404).json({ message: 'Product not found' });

@@ -4,9 +4,11 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const productRoutes = require('./routes/productRoutes');
+const redisClient = require('./config/redis');
 
 const app = express();
 const PORT = process.env.PORT || 5002;
+
 // Middleware
 app.use(express.json());
 app.use(cors({
@@ -19,6 +21,10 @@ app.use(cookieParser());
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB Connected'))
   .catch((err) => console.error('MongoDB Connection Error:', err));
+
+// Redis Connection
+redisClient.connect()
+  .catch((err) => console.error('Redis Connection Error:', err));
 
 const uploadRoutes = require('./routes/uploadRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -33,6 +39,25 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM signal received: closing HTTP server and Redis connection');
+  await redisClient.disconnect();
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', async () => {
+  console.log('\nSIGINT signal received: closing HTTP server and Redis connection');
+  await redisClient.disconnect();
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
 });
