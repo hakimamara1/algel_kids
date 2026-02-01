@@ -1,4 +1,5 @@
 const Product = require('../models/productModel');
+const { isCachedProduct, getCachedProduct, regenerateProductCache } = require('../utils/productCache');
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -17,6 +18,16 @@ const getProducts = async (req, res) => {
 // @access  Public
 const getProductById = async (req, res) => {
     try {
+        // Check if product is cached
+        if (isCachedProduct(req.params.id)) {
+            const cachedProduct = getCachedProduct(req.params.id);
+            if (cachedProduct) {
+                console.log(`✓ Serving product from cache: ${req.params.id}`);
+                return res.json(cachedProduct);
+            }
+        }
+
+        // Otherwise query MongoDB
         const product = await Product.findById(req.params.id);
         if (product) {
             res.json(product);
@@ -95,6 +106,10 @@ const updateProduct = async (req, res) => {
             product.colors = req.body.colors || product.colors;
 
             const updatedProduct = await product.save();
+
+            // Regenerate cache if this is the cached product
+            await regenerateProductCache(req.params.id);
+
             res.json(updatedProduct);
         } else {
             res.status(404).json({ message: 'Product not found' });
