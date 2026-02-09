@@ -2,10 +2,21 @@ const fs = require('fs');
 const path = require('path');
 const Product = require('../models/productModel');
 
-// Cached product ID
-const CACHED_PRODUCT_ID = '69793800671641164cab143f';
+// Cached product IDs - add product IDs here to enable file-based caching
+const CACHED_PRODUCT_IDS = [
+    '69793800671641164cab143f',
+    '698a5fd2d7265c2eb5de6332'
+];
 const CACHE_DIR = path.join(__dirname, '../cache/products');
-const CACHE_FILE = path.join(CACHE_DIR, `${CACHED_PRODUCT_ID}.json`);
+
+/**
+ * Get cache file path for a product
+ * @param {string} productId 
+ * @returns {string}
+ */
+const getCacheFilePath = (productId) => {
+    return path.join(CACHE_DIR, `${productId}.json`);
+};
 
 /**
  * Check if a product is cached
@@ -13,7 +24,11 @@ const CACHE_FILE = path.join(CACHE_DIR, `${CACHED_PRODUCT_ID}.json`);
  * @returns {boolean}
  */
 const isCachedProduct = (productId) => {
-    return productId === CACHED_PRODUCT_ID && fs.existsSync(CACHE_FILE);
+    if (!CACHED_PRODUCT_IDS.includes(productId)) {
+        return false;
+    }
+    const cacheFile = getCacheFilePath(productId);
+    return fs.existsSync(cacheFile);
 };
 
 /**
@@ -27,7 +42,8 @@ const getCachedProduct = (productId) => {
             return null;
         }
 
-        const data = fs.readFileSync(CACHE_FILE, 'utf8');
+        const cacheFile = getCacheFilePath(productId);
+        const data = fs.readFileSync(cacheFile, 'utf8');
         return JSON.parse(data);
     } catch (error) {
         console.error('Error reading cached product:', error.message);
@@ -42,7 +58,7 @@ const getCachedProduct = (productId) => {
  */
 const regenerateProductCache = async (productId) => {
     try {
-        if (productId !== CACHED_PRODUCT_ID) {
+        if (!CACHED_PRODUCT_IDS.includes(productId)) {
             return false;
         }
 
@@ -61,8 +77,9 @@ const regenerateProductCache = async (productId) => {
         }
 
         // Write to cache file
-        fs.writeFileSync(CACHE_FILE, JSON.stringify(product, null, 2), 'utf8');
-        console.log(`✓ Product cache regenerated: ${CACHE_FILE}`);
+        const cacheFile = getCacheFilePath(productId);
+        fs.writeFileSync(cacheFile, JSON.stringify(product, null, 2), 'utf8');
+        console.log(`✓ Product cache regenerated: ${cacheFile}`);
 
         return true;
     } catch (error) {
@@ -75,5 +92,5 @@ module.exports = {
     isCachedProduct,
     getCachedProduct,
     regenerateProductCache,
-    CACHED_PRODUCT_ID,
+    CACHED_PRODUCT_IDS,
 };
