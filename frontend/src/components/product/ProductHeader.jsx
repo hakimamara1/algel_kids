@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ProductHeader = ({ title, price, compareAtPrice, discount }) => {
+const ProductHeader = React.memo(({ title, price, compareAtPrice, discount }) => {
     return (
         <>
             <div className="flex justify-between items-start mb-2">
@@ -26,6 +26,6 @@ const ProductHeader = ({ title, price, compareAtPrice, discount }) => {
             </div>
         </>
     );
-};
+});
 
 export default ProductHeader;

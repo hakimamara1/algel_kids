@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ProductTrust = () => {
+const ProductTrust = React.memo(() => {
     return (
         <div className="grid grid-cols-3 gap-3 mb-6">
             <div className="bg-sky-50 p-3 rounded-xl flex flex-col items-center justify-center text-center space-y-1">
@@ -30,6 +30,6 @@ const ProductTrust = () => {
             </div>
         </div>
     );
-};
+});
 
 export default ProductTrust;

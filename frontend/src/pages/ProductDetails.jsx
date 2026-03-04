@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ImageCarousel from '../components/ImageCarousel';
-import CheckoutForm from '../components/CheckoutForm';
 import { trackEvent } from '../utils/FacebookPixel';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import ProductHeader from '../components/product/ProductHeader';
 import ProductVariants from '../components/product/ProductVariants';
-import ProductTrust from '../components/product/ProductTrust';
-import ProductDescription from '../components/product/ProductDescription';
+
+// Lazy load components that are not immediately visible
+const ProductTrust = lazy(() => import('../components/product/ProductTrust'));
+const ProductDescription = lazy(() => import('../components/product/ProductDescription'));
+const CheckoutForm = lazy(() => import('../components/CheckoutForm'));
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -49,10 +51,10 @@ const ProductDetails = () => {
         fetchProduct();
     }, [id]);
 
-    const handleColorChange = (color) => {
+    const handleColorChange = useCallback((color) => {
         setSelectedColor(color);
         setSelectedSize(null);
-    };
+    }, []);
 
     if (loading || !product) {
         return (
@@ -111,28 +113,24 @@ const ProductDetails = () => {
                     onSizeChange={setSelectedSize}
                 />
 
-                <ProductTrust />
-
-                <ProductDescription description={product.description} />
+                <Suspense fallback={<div className="h-20 flex items-center justify-center"><div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-pink-500"></div></div>}>
+                    <ProductTrust />
+                    <ProductDescription description={product.description} />
+                </Suspense>
             </div>
 
             {/* Inline Checkout Form */}
             <div id="checkout-section" className="px-4 pb-10 max-w-2xl mx-auto">
-                <CheckoutForm
-                    product={product}
-                    variant={{ color: selectedColor, size: selectedSize }}
-                    onClose={() => { }}
-                />
+                <Suspense fallback={<div className="h-40 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-pink-500"></div></div>}>
+                    <CheckoutForm
+                        product={product}
+                        variant={{ color: selectedColor, size: selectedSize }}
+                        onClose={() => { }}
+                    />
+                </Suspense>
             </div>
 
-            {/* Trust Badge Image */}
-            <div className="px-4 pb-10 max-w-2xl mx-auto">
-                <img
-                    src="/trust-badge.jpg"
-                    alt="Trusted Delivery"
-                    className="w-full rounded-2xl shadow-sm"
-                />
-            </div>
+
 
             {/* Contact Us Section */}
             <div className="text-center pb-12">

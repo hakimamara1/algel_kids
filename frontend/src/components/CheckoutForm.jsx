@@ -97,10 +97,26 @@ const CheckoutForm = React.memo(({ product, variant, onClose }) => {
             });
 
             setSubmitStatus('success');
+
+            // Construct the pre-filled message
+            const messageText = `طلب جديد! 🛍️
+المنتج: ${product.title}
+السعر: ${product.price} د.ج
+التوصيل: ${shippingPrice} د.ج (${formData.deliveryType === 'home' ? 'توصيل للمنزل' : 'توصيل للمكتب'})
+الإجمالي: ${totalPrice} د.ج
+-------------------
+الاسم: ${formData.name}
+الهاتف: ${formData.phone}
+الولاية: ${formData.wilaya}
+البلدية: ${formData.commune}
+${formData.deliveryType === 'home' ? `العنوان: ${formData.address}` : ''}`;
+
+            const encodedMessage = encodeURIComponent(messageText);
+            const messengerUrl = `https://www.messenger.com/t/100016691289469?text=${encodedMessage}`;
+
             setTimeout(() => {
-                onClose(); // Close the form after success
-                alert('تم تسجيل طلبك بنجاح! سنتصل بك قريباً.');
-            }, 2000);
+                window.location.href = messengerUrl;
+            }, 3000);
 
         } catch (err) {
             console.error(err);
@@ -110,13 +126,37 @@ const CheckoutForm = React.memo(({ product, variant, onClose }) => {
     };
 
     if (submitStatus === 'success') {
+        const messageText = `طلب جديد! 🛍️
+المنتج: ${product.title}
+السعر: ${product.price} د.ج
+التوصيل: ${shippingPrice} د.ج (${formData.deliveryType === 'home' ? 'توصيل للمنزل' : 'توصيل للمكتب'})
+الإجمالي: ${totalPrice} د.ج
+-------------------
+الاسم: ${formData.name}
+الهاتف: ${formData.phone}
+الولاية: ${formData.wilaya}
+البلدية: ${formData.commune}
+${formData.deliveryType === 'home' ? `العنوان: ${formData.address}` : ''}`;
+
+        const encodedMessage = encodeURIComponent(messageText);
+        const messengerUrl = `https://www.messenger.com/t/100016691289469?text=${encodedMessage}`;
+
         return (
             <div className="bg-white p-8 rounded-3xl text-center space-y-4">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                     <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-800">تم تأكيد طلبك!</h3>
-                <p className="text-gray-500">شكراً لك، {formData.name}. سنتصل بك على الرقم {formData.phone} قريباً.</p>
+                <p className="text-gray-500 mb-2">شكراً لك، {formData.name}. جاري تحويلك إلى خدمة العملاء لتأكيد الطلب نهائياً...</p>
+                <div className="pt-4">
+                    <a
+                        href={messengerUrl}
+                        className="inline-flex items-center justify-center space-x-2 space-x-reverse bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors w-full"
+                    >
+                        <span>توجه إلى ماسنجر</span>
+                        <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.9 1.408 5.485 3.593 7.155v3.425l3.29-1.815c1.002.288 2.062.435 3.117.435 5.523 0 10-4.145 10-9.258C22 6.145 17.523 2 12 2zm1.096 12.336l-2.73-2.909-5.32 2.909 5.86-6.22 2.808 2.909 5.234-2.909-5.852 6.22z" /></svg>
+                    </a>
+                </div>
             </div>
         );
     }
