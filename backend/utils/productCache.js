@@ -45,6 +45,11 @@ const getCachedProduct = (productId) => {
 
         const cacheFile = getCacheFilePath(productId);
         const data = fs.readFileSync(cacheFile, 'utf8');
+
+        if (!data || data.trim() === '') {
+            return null;
+        }
+
         return JSON.parse(data);
     } catch (error) {
         console.error('Error reading cached product:', error.message);
