@@ -88,7 +88,7 @@ const AdminProductEdit = () => {
             navigate('/admin');
         } catch (error) {
             console.error(error);
-            alert('Action failed');
+            alert(error.response?.data?.message || 'Action failed');
             setLoading(false);
         }
     };

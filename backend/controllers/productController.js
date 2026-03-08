@@ -57,7 +57,10 @@ const createProduct = async (req, res) => {
         const createdProduct = await product.save();
         res.status(201).json(createdProduct);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.slug) {
+            return res.status(400).json({ message: 'A product with this title/slug already exists.' });
+        }
+        res.status(400).json({ message: error.message || 'Product validation failed.' });
     }
 };
 
@@ -115,7 +118,10 @@ const updateProduct = async (req, res) => {
             res.status(404).json({ message: 'Product not found' });
         }
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.slug) {
+            return res.status(400).json({ message: 'A product with this title/slug already exists.' });
+        }
+        res.status(400).json({ message: error.message || 'Product validation failed.' });
     }
 };
 
