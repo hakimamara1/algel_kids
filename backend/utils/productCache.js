@@ -5,7 +5,8 @@ const Product = require('../models/productModel');
 // Cached product IDs - add product IDs here to enable file-based caching
 const CACHED_PRODUCT_IDS = [
     '69793800671641164cab143f',
-    '698a5fd2d7265c2eb5de6332'
+    '698a5fd2d7265c2eb5de6332',
+    '69acddc48c4d1cefa322cde5'
 ];
 const CACHE_DIR = path.join(__dirname, '../cache/products');
 
