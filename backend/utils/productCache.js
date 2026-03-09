@@ -6,7 +6,8 @@ const Product = require('../models/productModel');
 const CACHED_PRODUCT_IDS = [
     '69793800671641164cab143f',
     '698a5fd2d7265c2eb5de6332',
-    '69acddc48c4d1cefa322cde5'
+    '69acddc48c4d1cefa322cde5',
+    '69ae230df5ad250c6bee4af5'
 ];
 const CACHE_DIR = path.join(__dirname, '../cache/products');
 
