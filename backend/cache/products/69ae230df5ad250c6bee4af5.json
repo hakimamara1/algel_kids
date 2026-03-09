@@ -1,228 +1,228 @@
 {
-    "_id": "69ae230df5ad250c6bee4af5",
-    "title": "tranche 🧥",
-    "slug": "tranche-",
-    "description": "ترانش يعطيك لوك شيك وعصري ومختلف 😍\n🔴الشي المميز فيه\nأنه يليق مع أكثر من ستايل 👌\n\n✨ يجي روعة مع ستايل كلاسيك أنيق\n✨ ويجي تحفة ثاني مع ستايل سبورتي كاجوال\n\n🔴يعني قطعة وحدة… تقدري تعملي بها بزاف لوكات.\n\n💎 الكوب تاعو لارج ومريح\nمثالي للناس لي تحب اللبسة المستورة والأنيقة.\n\n⸻\n\n🎨 متوفر في 8 ألوان مميزة وخرافية\nباش كل وحدة تلقى اللون لي يعجبها.\n\n⸻\n🔴الطاي Standard\n\n⸻\n\n🚚 التوصيل متوفر لـ58 ولاية\nمع ZR Express حتى لباب دارك.\n\n⸻\n\n⚡ الكمية محدودة\n\n⏳ الطلبيات تغلق قبل العيد بـ4 أيام\nباش يوصلو كامل الكوموند قبل العيد إن شاء الله",
-    "price": 4300,
-    "category": "tranch",
-    "images": [
+  "_id": "69ae230df5ad250c6bee4af5",
+  "title": "tranche 🧥",
+  "slug": "tranche-",
+  "description": "ترانش يعطيك لوك شيك وعصري ومختلف 😍\n🔴الشي المميز فيه\nأنه يليق مع أكثر من ستايل 👌\n\n✨ يجي روعة مع ستايل كلاسيك أنيق\n✨ ويجي تحفة ثاني مع ستايل سبورتي كاجوال\n\n🔴يعني قطعة وحدة… تقدري تعملي بها بزاف لوكات.\n\n💎 الكوب تاعو لارج ومريح\nمثالي للناس لي تحب اللبسة المستورة والأنيقة.\n\n⸻\n\n🎨 متوفر في 8 ألوان مميزة وخرافية\nباش كل وحدة تلقى اللون لي يعجبها.\n\n⸻\n🔴الطاي Standard\n\n⸻\n\n🚚 التوصيل متوفر لـ58 ولاية\nمع ZR Express حتى لباب دارك.\n\n⸻\n\n⚡ الكمية محدودة\n\n⏳ الطلبيات تغلق قبل العيد بـ4 أيام\nباش يوصلو كامل الكوموند قبل العيد إن شاء الله",
+  "price": 4800,
+  "category": "tranch",
+  "images": [
+    {
+      "publicId": "malaksit-products/xnk4rlrxt8c9vexf4ixz",
+      "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773019781/malaksit-products/xnk4rlrxt8c9vexf4ixz.jpg",
+      "isMain": false,
+      "_id": "69ae230df5ad250c6bee4af6"
+    }
+  ],
+  "colors": [
+    {
+      "name": "Beig stable ",
+      "hexCode": "#FFEFD5",
+      "images": [
         {
-            "publicId": "malaksit-products/xnk4rlrxt8c9vexf4ixz",
-            "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773019781/malaksit-products/xnk4rlrxt8c9vexf4ixz.jpg",
-            "isMain": false,
-            "_id": "69ae230df5ad250c6bee4af6"
+          "publicId": "malaksit-products/e9pc0qwyniingxixwfgj",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773019886/malaksit-products/e9pc0qwyniingxixwfgj.png",
+          "isMain": false,
+          "_id": "69ae230df5ad250c6bee4af8"
+        },
+        {
+          "publicId": "malaksit-products/gctp1u1u760h32rtsky0",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021699/malaksit-products/gctp1u1u760h32rtsky0.jpg",
+          "isMain": false,
+          "_id": "69ae2a2ff5ad250c6bee4f1f"
         }
-    ],
-    "colors": [
+      ],
+      "sizes": [
         {
-            "name": "Beig stable ",
-            "hexCode": "#FFEFD5",
-            "images": [
-                {
-                    "publicId": "malaksit-products/e9pc0qwyniingxixwfgj",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773019886/malaksit-products/e9pc0qwyniingxixwfgj.png",
-                    "isMain": false,
-                    "_id": "69ae230df5ad250c6bee4af8"
-                },
-                {
-                    "publicId": "malaksit-products/gctp1u1u760h32rtsky0",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021699/malaksit-products/gctp1u1u760h32rtsky0.jpg",
-                    "isMain": false,
-                    "_id": "69ae2a2ff5ad250c6bee4f1f"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "standar",
-                    "stock": 10,
-                    "_id": "69ae28fbf5ad250c6bee4c03"
-                }
-            ],
-            "_id": "69ae230df5ad250c6bee4af7"
-        },
-        {
-            "name": "Marron caramel",
-            "hexCode": "#8B5E34",
-            "images": [
-                {
-                    "publicId": "malaksit-products/wyozpdzuup2rgotnkuix",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021166/malaksit-products/wyozpdzuup2rgotnkuix.png",
-                    "isMain": false,
-                    "_id": "69ae28fbf5ad250c6bee4c05"
-                },
-                {
-                    "publicId": "malaksit-products/qtcczjnxcnyg0b76rm9r",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021704/malaksit-products/qtcczjnxcnyg0b76rm9r.jpg",
-                    "isMain": false,
-                    "_id": "69ae2a2ff5ad250c6bee4f23"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "standar",
-                    "stock": 10,
-                    "_id": "69ae28fbf5ad250c6bee4c06"
-                }
-            ],
-            "_id": "69ae28fbf5ad250c6bee4c04"
-        },
-        {
-            "name": "Ivoire / Off-white",
-            "hexCode": "#E5E0D8",
-            "images": [
-                {
-                    "publicId": "malaksit-products/ckxi0ibytneavlr1k7c2",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021192/malaksit-products/ckxi0ibytneavlr1k7c2.png",
-                    "isMain": false,
-                    "_id": "69ae28fbf5ad250c6bee4c08"
-                },
-                {
-                    "publicId": "malaksit-products/nwsutxiyr02bhnnva5s6",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021709/malaksit-products/nwsutxiyr02bhnnva5s6.jpg",
-                    "isMain": false,
-                    "_id": "69ae2a2ff5ad250c6bee4f27"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "standar",
-                    "stock": 10,
-                    "_id": "69ae28fbf5ad250c6bee4c09"
-                }
-            ],
-            "_id": "69ae28fbf5ad250c6bee4c07"
-        },
-        {
-            "name": "Beige clair",
-            "hexCode": "#D9D2C5",
-            "images": [
-                {
-                    "publicId": "malaksit-products/iaxwjrqs91cgk1jkslkf",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021224/malaksit-products/iaxwjrqs91cgk1jkslkf.png",
-                    "isMain": false,
-                    "_id": "69ae28fbf5ad250c6bee4c0b"
-                },
-                {
-                    "publicId": "malaksit-products/ominrorz135ocwkbh2yp",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021719/malaksit-products/ominrorz135ocwkbh2yp.jpg",
-                    "isMain": false,
-                    "_id": "69ae2a2ff5ad250c6bee4f2b"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "standar",
-                    "stock": 10,
-                    "_id": "69ae28fbf5ad250c6bee4c0c"
-                }
-            ],
-            "_id": "69ae28fbf5ad250c6bee4c0a"
-        },
-        {
-            "name": "Noir",
-            "hexCode": "#1A1A1A",
-            "images": [
-                {
-                    "publicId": "malaksit-products/tvmsd7dx77ufsuz1rjqo",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021262/malaksit-products/tvmsd7dx77ufsuz1rjqo.png",
-                    "isMain": false,
-                    "_id": "69ae28fbf5ad250c6bee4c0e"
-                },
-                {
-                    "publicId": "malaksit-products/cnxbebkuyordehhntyt4",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021724/malaksit-products/cnxbebkuyordehhntyt4.jpg",
-                    "isMain": false,
-                    "_id": "69ae2a2ff5ad250c6bee4f2f"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "standar",
-                    "stock": 10,
-                    "_id": "69ae28fbf5ad250c6bee4c0f"
-                }
-            ],
-            "_id": "69ae28fbf5ad250c6bee4c0d"
-        },
-        {
-            "name": "Marron chocolat",
-            "hexCode": "#4B3621",
-            "images": [
-                {
-                    "publicId": "malaksit-products/ielts7asw0skar3bnudb",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021277/malaksit-products/ielts7asw0skar3bnudb.png",
-                    "isMain": false,
-                    "_id": "69ae28fbf5ad250c6bee4c11"
-                },
-                {
-                    "publicId": "malaksit-products/ba8qev0mrqxqtpnhxjsm",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021732/malaksit-products/ba8qev0mrqxqtpnhxjsm.jpg",
-                    "isMain": false,
-                    "_id": "69ae2a2ff5ad250c6bee4f33"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "standar",
-                    "stock": 10,
-                    "_id": "69ae28fbf5ad250c6bee4c12"
-                }
-            ],
-            "_id": "69ae28fbf5ad250c6bee4c10"
-        },
-        {
-            "name": "Taupe",
-            "hexCode": "#8B8177",
-            "images": [
-                {
-                    "publicId": "malaksit-products/oyc9hsadux7sfi5icrwh",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021304/malaksit-products/oyc9hsadux7sfi5icrwh.png",
-                    "isMain": false,
-                    "_id": "69ae28fbf5ad250c6bee4c14"
-                },
-                {
-                    "publicId": "malaksit-products/yyuywb6u8heowcfqu0d5",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021735/malaksit-products/yyuywb6u8heowcfqu0d5.jpg",
-                    "isMain": false,
-                    "_id": "69ae2a2ff5ad250c6bee4f37"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "standar",
-                    "stock": 10,
-                    "_id": "69ae28fbf5ad250c6bee4c15"
-                }
-            ],
-            "_id": "69ae28fbf5ad250c6bee4c13"
-        },
-        {
-            "name": "Vert kaki clair",
-            "hexCode": "#6B705C",
-            "images": [
-                {
-                    "publicId": "malaksit-products/fjbissfcvgn3o48f5wka",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021327/malaksit-products/fjbissfcvgn3o48f5wka.png",
-                    "isMain": false,
-                    "_id": "69ae28fbf5ad250c6bee4c17"
-                },
-                {
-                    "publicId": "malaksit-products/bghdhnip83d9lgbzlk0y",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021739/malaksit-products/bghdhnip83d9lgbzlk0y.jpg",
-                    "isMain": false,
-                    "_id": "69ae2a2ff5ad250c6bee4f3b"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "standar",
-                    "stock": 10,
-                    "_id": "69ae28fbf5ad250c6bee4c18"
-                }
-            ],
-            "_id": "69ae28fbf5ad250c6bee4c16"
+          "value": "standar",
+          "stock": 10,
+          "_id": "69ae28fbf5ad250c6bee4c03"
         }
-    ],
-    "createdAt": "2026-03-09T01:31:57.236Z",
-    "__v": 2
+      ],
+      "_id": "69ae230df5ad250c6bee4af7"
+    },
+    {
+      "name": "Marron caramel",
+      "hexCode": "#8B5E34",
+      "images": [
+        {
+          "publicId": "malaksit-products/wyozpdzuup2rgotnkuix",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021166/malaksit-products/wyozpdzuup2rgotnkuix.png",
+          "isMain": false,
+          "_id": "69ae28fbf5ad250c6bee4c05"
+        },
+        {
+          "publicId": "malaksit-products/qtcczjnxcnyg0b76rm9r",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021704/malaksit-products/qtcczjnxcnyg0b76rm9r.jpg",
+          "isMain": false,
+          "_id": "69ae2a2ff5ad250c6bee4f23"
+        }
+      ],
+      "sizes": [
+        {
+          "value": "standar",
+          "stock": 10,
+          "_id": "69ae28fbf5ad250c6bee4c06"
+        }
+      ],
+      "_id": "69ae28fbf5ad250c6bee4c04"
+    },
+    {
+      "name": "Ivoire / Off-white",
+      "hexCode": "#E5E0D8",
+      "images": [
+        {
+          "publicId": "malaksit-products/ckxi0ibytneavlr1k7c2",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021192/malaksit-products/ckxi0ibytneavlr1k7c2.png",
+          "isMain": false,
+          "_id": "69ae28fbf5ad250c6bee4c08"
+        },
+        {
+          "publicId": "malaksit-products/nwsutxiyr02bhnnva5s6",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021709/malaksit-products/nwsutxiyr02bhnnva5s6.jpg",
+          "isMain": false,
+          "_id": "69ae2a2ff5ad250c6bee4f27"
+        }
+      ],
+      "sizes": [
+        {
+          "value": "standar",
+          "stock": 10,
+          "_id": "69ae28fbf5ad250c6bee4c09"
+        }
+      ],
+      "_id": "69ae28fbf5ad250c6bee4c07"
+    },
+    {
+      "name": "Beige clair",
+      "hexCode": "#D9D2C5",
+      "images": [
+        {
+          "publicId": "malaksit-products/iaxwjrqs91cgk1jkslkf",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021224/malaksit-products/iaxwjrqs91cgk1jkslkf.png",
+          "isMain": false,
+          "_id": "69ae28fbf5ad250c6bee4c0b"
+        },
+        {
+          "publicId": "malaksit-products/ominrorz135ocwkbh2yp",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021719/malaksit-products/ominrorz135ocwkbh2yp.jpg",
+          "isMain": false,
+          "_id": "69ae2a2ff5ad250c6bee4f2b"
+        }
+      ],
+      "sizes": [
+        {
+          "value": "standar",
+          "stock": 10,
+          "_id": "69ae28fbf5ad250c6bee4c0c"
+        }
+      ],
+      "_id": "69ae28fbf5ad250c6bee4c0a"
+    },
+    {
+      "name": "Noir",
+      "hexCode": "#1A1A1A",
+      "images": [
+        {
+          "publicId": "malaksit-products/tvmsd7dx77ufsuz1rjqo",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021262/malaksit-products/tvmsd7dx77ufsuz1rjqo.png",
+          "isMain": false,
+          "_id": "69ae28fbf5ad250c6bee4c0e"
+        },
+        {
+          "publicId": "malaksit-products/cnxbebkuyordehhntyt4",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021724/malaksit-products/cnxbebkuyordehhntyt4.jpg",
+          "isMain": false,
+          "_id": "69ae2a2ff5ad250c6bee4f2f"
+        }
+      ],
+      "sizes": [
+        {
+          "value": "standar",
+          "stock": 10,
+          "_id": "69ae28fbf5ad250c6bee4c0f"
+        }
+      ],
+      "_id": "69ae28fbf5ad250c6bee4c0d"
+    },
+    {
+      "name": "Marron chocolat",
+      "hexCode": "#4B3621",
+      "images": [
+        {
+          "publicId": "malaksit-products/ielts7asw0skar3bnudb",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021277/malaksit-products/ielts7asw0skar3bnudb.png",
+          "isMain": false,
+          "_id": "69ae28fbf5ad250c6bee4c11"
+        },
+        {
+          "publicId": "malaksit-products/ba8qev0mrqxqtpnhxjsm",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021732/malaksit-products/ba8qev0mrqxqtpnhxjsm.jpg",
+          "isMain": false,
+          "_id": "69ae2a2ff5ad250c6bee4f33"
+        }
+      ],
+      "sizes": [
+        {
+          "value": "standar",
+          "stock": 10,
+          "_id": "69ae28fbf5ad250c6bee4c12"
+        }
+      ],
+      "_id": "69ae28fbf5ad250c6bee4c10"
+    },
+    {
+      "name": "Taupe",
+      "hexCode": "#8B8177",
+      "images": [
+        {
+          "publicId": "malaksit-products/oyc9hsadux7sfi5icrwh",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021304/malaksit-products/oyc9hsadux7sfi5icrwh.png",
+          "isMain": false,
+          "_id": "69ae28fbf5ad250c6bee4c14"
+        },
+        {
+          "publicId": "malaksit-products/yyuywb6u8heowcfqu0d5",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021735/malaksit-products/yyuywb6u8heowcfqu0d5.jpg",
+          "isMain": false,
+          "_id": "69ae2a2ff5ad250c6bee4f37"
+        }
+      ],
+      "sizes": [
+        {
+          "value": "standar",
+          "stock": 10,
+          "_id": "69ae28fbf5ad250c6bee4c15"
+        }
+      ],
+      "_id": "69ae28fbf5ad250c6bee4c13"
+    },
+    {
+      "name": "Vert kaki clair",
+      "hexCode": "#6B705C",
+      "images": [
+        {
+          "publicId": "malaksit-products/fjbissfcvgn3o48f5wka",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021327/malaksit-products/fjbissfcvgn3o48f5wka.png",
+          "isMain": false,
+          "_id": "69ae28fbf5ad250c6bee4c17"
+        },
+        {
+          "publicId": "malaksit-products/bghdhnip83d9lgbzlk0y",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021739/malaksit-products/bghdhnip83d9lgbzlk0y.jpg",
+          "isMain": false,
+          "_id": "69ae2a2ff5ad250c6bee4f3b"
+        }
+      ],
+      "sizes": [
+        {
+          "value": "standar",
+          "stock": 10,
+          "_id": "69ae28fbf5ad250c6bee4c18"
+        }
+      ],
+      "_id": "69ae28fbf5ad250c6bee4c16"
+    }
+  ],
+  "createdAt": "2026-03-09T01:31:57.236Z",
+  "__v": 2
 }
