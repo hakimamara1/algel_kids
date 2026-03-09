@@ -12,6 +12,7 @@ import ProductVariants from '../components/product/ProductVariants';
 const ProductTrust = lazy(() => import('../components/product/ProductTrust'));
 const ProductDescription = lazy(() => import('../components/product/ProductDescription'));
 const CheckoutForm = lazy(() => import('../components/CheckoutForm'));
+const ProductImageGallery = lazy(() => import('../components/product/ProductImageGallery'));
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -126,7 +127,12 @@ const ProductDetails = () => {
                 </Suspense>
             </div>
 
-
+            {/* Photo Gallery Section */}
+            <div className="px-4 pb-10 max-w-2xl mx-auto">
+                <Suspense fallback={<div className="h-20 flex items-center justify-center"><div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-pink-500"></div></div>}>
+                    <ProductImageGallery images={displayImages} />
+                </Suspense>
+            </div>
 
             {/* Contact Us Section */}
             <div className="text-center pb-12">
