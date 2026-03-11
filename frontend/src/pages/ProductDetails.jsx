@@ -35,13 +35,22 @@ const ProductDetails = () => {
                 }
 
                 setLoading(false);
-
                 trackEvent('ViewContent', {
                     content_ids: [data._id],
                     content_name: data.title,
                     currency: 'DZD',
                     value: data.price
                 });
+
+                if (window.ttq) {
+                    window.ttq.track('ViewContent', {
+                        content_id: data._id,
+                        content_type: 'product',
+                        content_name: data.title,
+                        currency: 'DZD',
+                        value: data.price
+                    });
+                }
 
             } catch (error) {
                 console.error(error);

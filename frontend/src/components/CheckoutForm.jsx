@@ -96,6 +96,16 @@ const CheckoutForm = React.memo(({ product, variant, onClose }) => {
                 content_ids: [product._id]
             });
 
+            if (window.ttq) {
+                window.ttq.track('CompletePayment', {
+                    content_id: product._id,
+                    content_type: 'product',
+                    content_name: product.title,
+                    currency: 'DZD',
+                    value: totalPrice
+                });
+            }
+
             setSubmitStatus('success');
 
             // Construct the pre-filled message
