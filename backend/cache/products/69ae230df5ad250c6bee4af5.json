@@ -67,32 +67,6 @@
       "_id": "69ae28fbf5ad250c6bee4c04"
     },
     {
-      "name": "Ivoire / Off-white",
-      "hexCode": "#E5E0D8",
-      "images": [
-        {
-          "publicId": "malaksit-products/ckxi0ibytneavlr1k7c2",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021192/malaksit-products/ckxi0ibytneavlr1k7c2.png",
-          "isMain": false,
-          "_id": "69ae28fbf5ad250c6bee4c08"
-        },
-        {
-          "publicId": "malaksit-products/nwsutxiyr02bhnnva5s6",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021709/malaksit-products/nwsutxiyr02bhnnva5s6.jpg",
-          "isMain": false,
-          "_id": "69ae2a2ff5ad250c6bee4f27"
-        }
-      ],
-      "sizes": [
-        {
-          "value": "standar",
-          "stock": 10,
-          "_id": "69ae28fbf5ad250c6bee4c09"
-        }
-      ],
-      "_id": "69ae28fbf5ad250c6bee4c07"
-    },
-    {
       "name": "Beige clair",
       "hexCode": "#D9D2C5",
       "images": [
@@ -143,32 +117,6 @@
         }
       ],
       "_id": "69ae28fbf5ad250c6bee4c13"
-    },
-    {
-      "name": "Vert kaki clair",
-      "hexCode": "#6B705C",
-      "images": [
-        {
-          "publicId": "malaksit-products/fjbissfcvgn3o48f5wka",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021327/malaksit-products/fjbissfcvgn3o48f5wka.png",
-          "isMain": false,
-          "_id": "69ae28fbf5ad250c6bee4c17"
-        },
-        {
-          "publicId": "malaksit-products/bghdhnip83d9lgbzlk0y",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021739/malaksit-products/bghdhnip83d9lgbzlk0y.jpg",
-          "isMain": false,
-          "_id": "69ae2a2ff5ad250c6bee4f3b"
-        }
-      ],
-      "sizes": [
-        {
-          "value": "standar",
-          "stock": 10,
-          "_id": "69ae28fbf5ad250c6bee4c18"
-        }
-      ],
-      "_id": "69ae28fbf5ad250c6bee4c16"
     }
   ],
   "createdAt": "2026-03-09T01:31:57.236Z",
