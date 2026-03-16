@@ -1,115 +1,109 @@
 {
-    "_id": "698a5fd2d7265c2eb5de6332",
-    "title": "comphy dress 2",
-    "slug": "comphy-dress-2",
-    "description": "دللي بنتك بأرقى فساتين العيد المصممة لعالي الجودة. تصميم مريح، دافئ، ويخطف الأنظار بتفاصيله المميزة.\n👗 التفاصيل:\n✅الأعمار: 3- 12 سنة.\n✅الجودة: قماش دافئ وملمس ناعم.\n📦 خدماتنا:\n💯التوصيل بـاطل (مجاني) لمكاتب ZAD Express 🇩🇿.\n😇ضمان الرضا: افتحي الطرد وتأكدي من الجودة قبل الدفع.\n⚠️ تنبيه: الكمية جد محدودة، سارعي بالحجز!\n⛔️ الطلبات تحبس قبل رمضان 🌙",
-    "price": 6400,
-    "category": "girls-clothing",
-    "images": [
+  "_id": "698a5fd2d7265c2eb5de6332",
+  "title": "lily dress",
+  "slug": "comphy-dress-2",
+  "description": "دللي بنتك بأرقى فساتين العيد المصممة لعالي الجودة. تصميم مريح، دافئ، ويخطف الأنظار بتفاصيله المميزة.\n👗 التفاصيل:\n✅الأعمار: 3- 12 سنة.\n✅الجودة: قماش دافئ وملمس ناعم.\n📦 خدماتنا:\n💯التوصيل بـاطل (مجاني) لمكاتب ZR Express 🇩🇿.\n😇ضمان الرضا: افتحي الطرد وتأكدي من الجودة قبل الدفع.\n⚠️ تنبيه: الكمية جد محدودة، سارعي بالحجز!\n⛔️ الطلبات تحبس قبل العيد ب 4 ايام 🌙",
+  "price": 7200,
+  "category": "girls-clothing",
+  "images": [
+    {
+      "publicId": "malaksit-products/gzxsr025n6n4est2orbf",
+      "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1770676023/malaksit-products/gzxsr025n6n4est2orbf.png",
+      "isMain": false,
+      "_id": "698a5fd2d7265c2eb5de6333"
+    }
+  ],
+  "colors": [
+    {
+      "name": "lily dress",
+      "hexCode": "#964D95",
+      "images": [
         {
-            "publicId": "malaksit-products/gzxsr025n6n4est2orbf",
-            "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1770676023/malaksit-products/gzxsr025n6n4est2orbf.png",
-            "isMain": false,
-            "_id": "698a5fd2d7265c2eb5de6333"
-        }
-    ],
-    "colors": [
+          "publicId": "malaksit-products/suel5f9ygbd4qebhdhfk",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773625666/malaksit-products/suel5f9ygbd4qebhdhfk.png",
+          "isMain": false,
+          "_id": "69b762083b04d6ed5db5cc40"
+        },
         {
-            "name": "white",
-            "hexCode": "white",
-            "images": [
-                {
-                    "publicId": "malaksit-products/i7vlcjv2udr02ykzeep1",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1770676135/malaksit-products/i7vlcjv2udr02ykzeep1.png",
-                    "isMain": false,
-                    "_id": "698a5fd2d7265c2eb5de6336"
-                },
-                {
-                    "publicId": "malaksit-products/h506asmafq3int1lo01m",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1770676226/malaksit-products/h506asmafq3int1lo01m.png",
-                    "isMain": false,
-                    "_id": "698a60bcd7265c2eb5de649e"
-                },
-                {
-                    "publicId": "malaksit-products/zgopb0sqpwkifwbzbvpf",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1770676244/malaksit-products/zgopb0sqpwkifwbzbvpf.png",
-                    "isMain": false,
-                    "_id": "698a60bcd7265c2eb5de649f"
-                },
-                {
-                    "publicId": "malaksit-products/jjmdg9c9pmadmhoxclcg",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1770676279/malaksit-products/jjmdg9c9pmadmhoxclcg.png",
-                    "isMain": false,
-                    "_id": "698a60bcd7265c2eb5de64a0"
-                },
-                {
-                    "publicId": "malaksit-products/cio3kb5l5eq9hlz7qycs",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1770676304/malaksit-products/cio3kb5l5eq9hlz7qycs.png",
-                    "isMain": false,
-                    "_id": "698a60bcd7265c2eb5de64a1"
-                },
-                {
-                    "publicId": "malaksit-products/r8almb7bnxfzvpsvj8bt",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1770676659/malaksit-products/r8almb7bnxfzvpsvj8bt.jpg",
-                    "isMain": false,
-                    "_id": "698a61cdd7265c2eb5de672a"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "سنة 3",
-                    "stock": 3,
-                    "_id": "698a5fd2d7265c2eb5de6337"
-                },
-                {
-                    "value": "سنة 4",
-                    "stock": 4,
-                    "_id": "698a60bcd7265c2eb5de64a3"
-                },
-                {
-                    "value": "سنة 5",
-                    "stock": 6,
-                    "_id": "698a60bcd7265c2eb5de64a4"
-                },
-                {
-                    "value": "سنة 6",
-                    "stock": 5,
-                    "_id": "698a60bcd7265c2eb5de64a5"
-                },
-                {
-                    "value": "سنة 7",
-                    "stock": 5,
-                    "_id": "698a60bcd7265c2eb5de64a6"
-                },
-                {
-                    "value": "سنة 8",
-                    "stock": 5,
-                    "_id": "698a60bcd7265c2eb5de64a7"
-                },
-                {
-                    "value": "سنة 9",
-                    "stock": 5,
-                    "_id": "698a60bcd7265c2eb5de64a8"
-                },
-                {
-                    "value": "سنة 10",
-                    "stock": 5,
-                    "_id": "698a60bcd7265c2eb5de64a9"
-                },
-                {
-                    "value": "سنة 11",
-                    "stock": 5,
-                    "_id": "698a60bcd7265c2eb5de64aa"
-                },
-                {
-                    "value": "سنة 12",
-                    "stock": 6,
-                    "_id": "698a60bcd7265c2eb5de64ab"
-                }
-            ],
-            "_id": "698a5fd2d7265c2eb5de6335"
+          "publicId": "malaksit-products/ximiyzcupbyceexrbnvi",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773625674/malaksit-products/ximiyzcupbyceexrbnvi.png",
+          "isMain": false,
+          "_id": "69b762083b04d6ed5db5cc41"
+        },
+        {
+          "publicId": "malaksit-products/hwbwsqyufcd7fyllcsag",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773625685/malaksit-products/hwbwsqyufcd7fyllcsag.png",
+          "isMain": false,
+          "_id": "69b762083b04d6ed5db5cc42"
+        },
+        {
+          "publicId": "malaksit-products/btqxc64q1jy4c6mvyi1c",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773625714/malaksit-products/btqxc64q1jy4c6mvyi1c.png",
+          "isMain": false,
+          "_id": "69b762083b04d6ed5db5cc43"
+        },
+        {
+          "publicId": "malaksit-products/odi1a74pykialswsb2sx",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773625725/malaksit-products/odi1a74pykialswsb2sx.png",
+          "isMain": false,
+          "_id": "69b762083b04d6ed5db5cc44"
         }
-    ],
-    "createdAt": "2026-02-09T22:29:38.949Z",
-    "__v": 2
+      ],
+      "sizes": [
+        {
+          "value": "سنة 3",
+          "stock": 3,
+          "_id": "698a5fd2d7265c2eb5de6337"
+        },
+        {
+          "value": "سنة 4",
+          "stock": 4,
+          "_id": "698a60bcd7265c2eb5de64a3"
+        },
+        {
+          "value": "سنة 5",
+          "stock": 6,
+          "_id": "698a60bcd7265c2eb5de64a4"
+        },
+        {
+          "value": "سنة 6",
+          "stock": 5,
+          "_id": "698a60bcd7265c2eb5de64a5"
+        },
+        {
+          "value": "سنة 7",
+          "stock": 5,
+          "_id": "698a60bcd7265c2eb5de64a6"
+        },
+        {
+          "value": "سنة 8",
+          "stock": 5,
+          "_id": "698a60bcd7265c2eb5de64a7"
+        },
+        {
+          "value": "سنة 9",
+          "stock": 5,
+          "_id": "698a60bcd7265c2eb5de64a8"
+        },
+        {
+          "value": "سنة 10",
+          "stock": 5,
+          "_id": "698a60bcd7265c2eb5de64a9"
+        },
+        {
+          "value": "سنة 11",
+          "stock": 5,
+          "_id": "698a60bcd7265c2eb5de64aa"
+        },
+        {
+          "value": "سنة 12",
+          "stock": 6,
+          "_id": "698a60bcd7265c2eb5de64ab"
+        }
+      ],
+      "_id": "698a5fd2d7265c2eb5de6335"
+    }
+  ],
+  "createdAt": "2026-02-09T22:29:38.949Z",
+  "__v": 3
 }
