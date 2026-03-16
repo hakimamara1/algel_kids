@@ -15,46 +15,20 @@
   ],
   "colors": [
     {
-      "name": "Beig stable ",
-      "hexCode": "#FFEFD5",
-      "images": [
-        {
-          "publicId": "malaksit-products/e9pc0qwyniingxixwfgj",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773019886/malaksit-products/e9pc0qwyniingxixwfgj.png",
-          "isMain": false,
-          "_id": "69ae230df5ad250c6bee4af8"
-        },
-        {
-          "publicId": "malaksit-products/gctp1u1u760h32rtsky0",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021699/malaksit-products/gctp1u1u760h32rtsky0.jpg",
-          "isMain": false,
-          "_id": "69ae2a2ff5ad250c6bee4f1f"
-        }
-      ],
-      "sizes": [
-        {
-          "value": "standar",
-          "stock": 10,
-          "_id": "69ae28fbf5ad250c6bee4c03"
-        }
-      ],
-      "_id": "69ae230df5ad250c6bee4af7"
-    },
-    {
       "name": "Marron caramel",
       "hexCode": "#8B5E34",
       "images": [
         {
-          "publicId": "malaksit-products/wyozpdzuup2rgotnkuix",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021166/malaksit-products/wyozpdzuup2rgotnkuix.png",
+          "publicId": "malaksit-products/ryli7sk9hijmkzpss3lz",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773629393/malaksit-products/ryli7sk9hijmkzpss3lz.png",
           "isMain": false,
-          "_id": "69ae28fbf5ad250c6bee4c05"
+          "_id": "69b7702f0fd6ba1df2a4b35e"
         },
         {
-          "publicId": "malaksit-products/qtcczjnxcnyg0b76rm9r",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021704/malaksit-products/qtcczjnxcnyg0b76rm9r.jpg",
+          "publicId": "malaksit-products/ccwpvzuazng1bgkxzzyc",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773629406/malaksit-products/ccwpvzuazng1bgkxzzyc.png",
           "isMain": false,
-          "_id": "69ae2a2ff5ad250c6bee4f23"
+          "_id": "69b7702f0fd6ba1df2a4b35f"
         }
       ],
       "sizes": [
@@ -71,16 +45,22 @@
       "hexCode": "#D9D2C5",
       "images": [
         {
-          "publicId": "malaksit-products/iaxwjrqs91cgk1jkslkf",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021224/malaksit-products/iaxwjrqs91cgk1jkslkf.png",
+          "publicId": "malaksit-products/la9uqb1gpddb6g6zop8q",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773629418/malaksit-products/la9uqb1gpddb6g6zop8q.png",
           "isMain": false,
-          "_id": "69ae28fbf5ad250c6bee4c0b"
+          "_id": "69b7702f0fd6ba1df2a4b362"
         },
         {
-          "publicId": "malaksit-products/ominrorz135ocwkbh2yp",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021719/malaksit-products/ominrorz135ocwkbh2yp.jpg",
+          "publicId": "malaksit-products/lsmtshwfh3zoza5lf85l",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773629439/malaksit-products/lsmtshwfh3zoza5lf85l.png",
           "isMain": false,
-          "_id": "69ae2a2ff5ad250c6bee4f2b"
+          "_id": "69b7702f0fd6ba1df2a4b363"
+        },
+        {
+          "publicId": "malaksit-products/tdfi6gsk4njprtqemcvy",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773629445/malaksit-products/tdfi6gsk4njprtqemcvy.png",
+          "isMain": false,
+          "_id": "69b7702f0fd6ba1df2a4b364"
         }
       ],
       "sizes": [
@@ -97,16 +77,22 @@
       "hexCode": "#8B8177",
       "images": [
         {
-          "publicId": "malaksit-products/oyc9hsadux7sfi5icrwh",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021304/malaksit-products/oyc9hsadux7sfi5icrwh.png",
+          "publicId": "malaksit-products/elati4qhjwyw8abqvhul",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773629455/malaksit-products/elati4qhjwyw8abqvhul.png",
           "isMain": false,
-          "_id": "69ae28fbf5ad250c6bee4c14"
+          "_id": "69b7702f0fd6ba1df2a4b367"
         },
         {
-          "publicId": "malaksit-products/yyuywb6u8heowcfqu0d5",
-          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773021735/malaksit-products/yyuywb6u8heowcfqu0d5.jpg",
+          "publicId": "malaksit-products/xueivbzkfgekdh99bwsz",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773629467/malaksit-products/xueivbzkfgekdh99bwsz.png",
           "isMain": false,
-          "_id": "69ae2a2ff5ad250c6bee4f37"
+          "_id": "69b7702f0fd6ba1df2a4b368"
+        },
+        {
+          "publicId": "malaksit-products/hp7ed7i1xn5p9wdlyt73",
+          "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1773629474/malaksit-products/hp7ed7i1xn5p9wdlyt73.png",
+          "isMain": false,
+          "_id": "69b7702f0fd6ba1df2a4b369"
         }
       ],
       "sizes": [
@@ -120,5 +106,5 @@
     }
   ],
   "createdAt": "2026-03-09T01:31:57.236Z",
-  "__v": 3
+  "__v": 5
 }
