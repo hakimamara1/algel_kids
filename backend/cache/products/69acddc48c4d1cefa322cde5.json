@@ -1,191 +1,167 @@
 {
-    "_id": "69acddc48c4d1cefa322cde5",
-    "title": "l’ensemble Diva 🍂",
-    "slug": "lensemble-diva-",
-    "description": "اونسومبل العيد بامتياز.  انيق مريح. مميز \n\nمتوفر في 3 ألوان.   باج.  مارون نوار \n\nلي طاي من 38…48\n\n القماش كراب توركيش نوعية ممتازة. \n\nالتوصيل متوفر 69 ولاية \n\nمتوفر من قطعتين ( le haut  فيه حزام وبراون فالرقبة. تسهل عليك اللبس + بونتالون بلاستيك اسهل فاللبس )",
-    "price": 4200,
-    "category": "angel_clost",
-    "images": [
+  "_id": "69acddc48c4d1cefa322cde5",
+  "title": "l’ensemble Diva 🍂",
+  "slug": "lensemble-diva-",
+  "description": "اونسومبل العيد بامتياز.  انيق مريح. مميز \n\nمتوفر في 3 ألوان.   باج.  مارون نوار \n\nلي طاي من 38…48\n\n القماش كراب توركيش نوعية ممتازة. \n\nالتوصيل متوفر 69 ولاية \n\nمتوفر من قطعتين ( le haut  فيه حزام وبراون فالرقبة. تسهل عليك اللبس + بونتالون بلاستيك اسهل فاللبس )",
+  "price": 4200,
+  "category": "angel_clost",
+  "images": [
+    {
+      "publicId": "malaksit-products/aogtn5fmoygbrfkxdqda",
+      "url": "https://res.cloudinary.com/djakukf0r/image/upload/v1779314022/malaksit-products/aogtn5fmoygbrfkxdqda.jpg",
+      "isMain": false,
+      "_id": "6a0e2d6bb84aca12bc6765ab"
+    }
+  ],
+  "colors": [
+    {
+      "name": "bege",
+      "hexCode": "CFB08C#",
+      "images": [
         {
-            "publicId": "malaksit-products/ptrmxeuwox2hyfprgvwf",
-            "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1772936227/malaksit-products/ptrmxeuwox2hyfprgvwf.jpg",
-            "isMain": false,
-            "_id": "69acddc48c4d1cefa322cde6"
-        }
-    ],
-    "colors": [
-        {
-            "name": "bege",
-            "hexCode": "CFB08C#",
-            "images": [
-                {
-                    "publicId": "malaksit-products/vpcbrj06qewobdv753y5",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1772936314/malaksit-products/vpcbrj06qewobdv753y5.jpg",
-                    "isMain": false,
-                    "_id": "69acddc48c4d1cefa322cde8"
-                },
-                {
-                    "publicId": "malaksit-products/ijdftizl8upkukxzukuv",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1772936381/malaksit-products/ijdftizl8upkukxzukuv.jpg",
-                    "isMain": false,
-                    "_id": "69acddc48c4d1cefa322cde9"
-                },
-                {
-                    "publicId": "malaksit-products/juikjzx21biyxrimffte",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1772936386/malaksit-products/juikjzx21biyxrimffte.jpg",
-                    "isMain": false,
-                    "_id": "69acddc48c4d1cefa322cdea"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "38",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdeb"
-                },
-                {
-                    "value": "40",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdec"
-                },
-                {
-                    "value": "42",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cded"
-                },
-                {
-                    "value": "44",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdee"
-                },
-                {
-                    "value": "46",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdef"
-                },
-                {
-                    "value": "48",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdf0"
-                }
-            ],
-            "_id": "69acddc48c4d1cefa322cde7"
+          "publicId": "malaksit-products/zggwy66ubt2vwvjeuku3",
+          "url": "https://res.cloudinary.com/djakukf0r/image/upload/v1779314008/malaksit-products/zggwy66ubt2vwvjeuku3.jpg",
+          "isMain": false,
+          "_id": "6a0e2d6bb84aca12bc6765ad"
         },
         {
-            "name": "marron",
-            "hexCode": "#693E10",
-            "images": [
-                {
-                    "publicId": "malaksit-products/xwrrmgsuddlokqgoqfo0",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1772936473/malaksit-products/xwrrmgsuddlokqgoqfo0.jpg",
-                    "isMain": false,
-                    "_id": "69acddc48c4d1cefa322cdf2"
-                },
-                {
-                    "publicId": "malaksit-products/e8yy4m1mvv8dvqs2xcgn",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1772936483/malaksit-products/e8yy4m1mvv8dvqs2xcgn.jpg",
-                    "isMain": false,
-                    "_id": "69acddc48c4d1cefa322cdf3"
-                },
-                {
-                    "publicId": "malaksit-products/aizqzncl7ppnezoacfge",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1772936489/malaksit-products/aizqzncl7ppnezoacfge.jpg",
-                    "isMain": false,
-                    "_id": "69acddc48c4d1cefa322cdf4"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "38",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdf5"
-                },
-                {
-                    "value": "40",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdf6"
-                },
-                {
-                    "value": "42",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdf7"
-                },
-                {
-                    "value": "44",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdf8"
-                },
-                {
-                    "value": "46",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdf9"
-                },
-                {
-                    "value": "48",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdfa"
-                }
-            ],
-            "_id": "69acddc48c4d1cefa322cdf1"
+          "publicId": "malaksit-products/tgfolo2brkdbko4sattt",
+          "url": "https://res.cloudinary.com/djakukf0r/image/upload/v1779314017/malaksit-products/tgfolo2brkdbko4sattt.jpg",
+          "isMain": false,
+          "_id": "6a0e2d6bb84aca12bc6765ae"
+        }
+      ],
+      "sizes": [
+        {
+          "value": "38",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdeb"
         },
         {
-            "name": "Noire",
-            "hexCode": "#0A0909",
-            "images": [
-                {
-                    "publicId": "malaksit-products/yuwhtdlpoh4m2zwh7yd0",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1772936552/malaksit-products/yuwhtdlpoh4m2zwh7yd0.jpg",
-                    "isMain": false,
-                    "_id": "69acddc48c4d1cefa322cdfc"
-                },
-                {
-                    "publicId": "malaksit-products/zwqnfpfufwq5v7eaatnu",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1772936559/malaksit-products/zwqnfpfufwq5v7eaatnu.jpg",
-                    "isMain": false,
-                    "_id": "69acddc48c4d1cefa322cdfd"
-                },
-                {
-                    "publicId": "malaksit-products/ldv8bfeiwnitkfuoyixi",
-                    "url": "https://res.cloudinary.com/dauyda6dx/image/upload/v1772936606/malaksit-products/ldv8bfeiwnitkfuoyixi.jpg",
-                    "isMain": false,
-                    "_id": "69acddc48c4d1cefa322cdfe"
-                }
-            ],
-            "sizes": [
-                {
-                    "value": "38",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322cdff"
-                },
-                {
-                    "value": "40",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322ce00"
-                },
-                {
-                    "value": "42",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322ce01"
-                },
-                {
-                    "value": "44",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322ce02"
-                },
-                {
-                    "value": "46",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322ce03"
-                },
-                {
-                    "value": "48",
-                    "stock": 10,
-                    "_id": "69acddc48c4d1cefa322ce04"
-                }
-            ],
-            "_id": "69acddc48c4d1cefa322cdfb"
+          "value": "40",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdec"
+        },
+        {
+          "value": "42",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cded"
+        },
+        {
+          "value": "44",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdee"
+        },
+        {
+          "value": "46",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdef"
+        },
+        {
+          "value": "48",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdf0"
         }
-    ],
-    "createdAt": "2026-03-08T02:24:04.161Z",
-    "__v": 1
+      ],
+      "_id": "69acddc48c4d1cefa322cde7"
+    },
+    {
+      "name": "marron",
+      "hexCode": "#693E10",
+      "images": [
+        {
+          "publicId": "malaksit-products/cdch4oix5swknpy9fa0z",
+          "url": "https://res.cloudinary.com/djakukf0r/image/upload/v1779314058/malaksit-products/cdch4oix5swknpy9fa0z.jpg",
+          "isMain": false,
+          "_id": "6a0e2da5f5c4dd732bd7316b"
+        },
+        {
+          "publicId": "malaksit-products/qzrq1ksyaljzdxm2z1ud",
+          "url": "https://res.cloudinary.com/djakukf0r/image/upload/v1779314064/malaksit-products/qzrq1ksyaljzdxm2z1ud.jpg",
+          "isMain": false,
+          "_id": "6a0e2da5f5c4dd732bd7316c"
+        }
+      ],
+      "sizes": [
+        {
+          "value": "38",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdf5"
+        },
+        {
+          "value": "40",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdf6"
+        },
+        {
+          "value": "42",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdf7"
+        },
+        {
+          "value": "44",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdf8"
+        },
+        {
+          "value": "46",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdf9"
+        },
+        {
+          "value": "48",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdfa"
+        }
+      ],
+      "_id": "69acddc48c4d1cefa322cdf1"
+    },
+    {
+      "name": "Noire",
+      "hexCode": "#0A0909",
+      "images": [
+        {
+          "publicId": "malaksit-products/ncqabug3isl7vayy7oxm",
+          "url": "https://res.cloudinary.com/djakukf0r/image/upload/v1779314074/malaksit-products/ncqabug3isl7vayy7oxm.jpg",
+          "isMain": false,
+          "_id": "6a0e2da5f5c4dd732bd73174"
+        }
+      ],
+      "sizes": [
+        {
+          "value": "38",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322cdff"
+        },
+        {
+          "value": "40",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322ce00"
+        },
+        {
+          "value": "42",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322ce01"
+        },
+        {
+          "value": "44",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322ce02"
+        },
+        {
+          "value": "46",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322ce03"
+        },
+        {
+          "value": "48",
+          "stock": 10,
+          "_id": "69acddc48c4d1cefa322ce04"
+        }
+      ],
+      "_id": "69acddc48c4d1cefa322cdfb"
+    }
+  ],
+  "createdAt": "2026-03-08T02:24:04.161Z",
+  "__v": 5
 }
