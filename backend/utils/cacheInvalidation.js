@@ -1,4 +1,4 @@
-const redisConfig = require('../config/redis');
+
 
 const isConnected = typeof redisConfig.isConnected === 'function' ? redisConfig.isConnected : () => false;
 const getRedisClient = typeof redisConfig.getRedisClient === 'function' ? redisConfig.getRedisClient : () => null;

@@ -1,5 +1,4 @@
 const Product = require('../models/productModel');
-const { invalidateProduct, invalidateAllProducts } = require('../utils/cacheInvalidation');
 
 // @desc    Get all products
 // @route   GET /api/products
