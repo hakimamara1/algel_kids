@@ -72,6 +72,12 @@ const CheckoutForm = React.memo(({ product, variant, onClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // The server refuses orders without a size, so ask for it here first
+        if (variant?.color?.sizes?.length && !variant?.size) {
+            setErrorMessage('يرجى اختيار المقاس أولاً');
+            return;
+        }
+
         if (!validatePhone(formData.phone)) {
             setErrorMessage('يرجى إدخال رقم هاتف صحيح (05، 06، أو 07)');
             return;
@@ -106,9 +112,10 @@ const CheckoutForm = React.memo(({ product, variant, onClose }) => {
 
             // The order id doubles as the event id, so a future server-side
             // Conversions API event for the same order is deduplicated by Meta
+            // The server sets the real total; fall back to ours if an old backend answers
             trackEvent('Purchase', {
                 currency: 'DZD',
-                value: totalPrice,
+                value: savedOrder?.pricing?.totalPrice ?? totalPrice,
                 content_name: product.title,
                 content_ids: [product._id],
                 content_type: 'product',
@@ -140,7 +147,13 @@ ${formData.deliveryType === 'home' ? `العنوان: ${formData.address}` : ''}
         } catch (err) {
             console.error(err);
             setSubmitStatus('error');
-            setErrorMessage('حدث خطأ ما. يرجى المحاولة مرة أخرى.');
+            if (err.status === 409) {
+                setErrorMessage('عذراً، هذا المقاس نفد. يرجى اختيار مقاس آخر.');
+            } else if (err.status === 429) {
+                setErrorMessage('تم إرسال طلبات كثيرة. يرجى الاتصال بنا على 0662241056.');
+            } else {
+                setErrorMessage('حدث خطأ ما. يرجى المحاولة مرة أخرى.');
+            }
         }
     };
 

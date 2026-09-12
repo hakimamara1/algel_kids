@@ -6,7 +6,11 @@ const USE_EDGE = import.meta.env.PROD;
 
 const getJson = async (url, options) => {
     const res = await fetch(url, options);
-    if (!res.ok) throw new Error(`Request failed (${res.status}): ${url}`);
+    if (!res.ok) {
+        const error = new Error(`Request failed (${res.status}): ${url}`);
+        error.status = res.status;
+        throw error;
+    }
     return res.json();
 };
 

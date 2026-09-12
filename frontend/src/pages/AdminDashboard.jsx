@@ -1,34 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import adminApi, { apiErrorMessage } from '../lib/adminApi';
 
 const AdminDashboard = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    const fetchProducts = useCallback(async () => {
+        try {
+            const { data } = await adminApi.get('/products');
+            setProducts(data);
+            setError('');
+        } catch (err) {
+            setError(apiErrorMessage(err, 'Could not load products'));
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         fetchProducts();
-    }, []);
-
-    const fetchProducts = async () => {
-        try {
-            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
-            setProducts(data);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching products:', error);
-            setLoading(false);
-        }
-    };
+    }, [fetchProducts]);
 
     const deleteHandler = async (id) => {
         if (window.confirm('Are you sure you want to delete this product?')) {
             try {
-                await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
+                await adminApi.delete(`/products/${id}`);
                 fetchProducts(); // Refresh list
-            } catch (error) {
-                console.error('Error deleting product:', error);
-                alert('Failed to delete product');
+            } catch (err) {
+                alert(apiErrorMessage(err, 'Failed to delete product'));
             }
         }
     };
@@ -45,7 +46,9 @@ const AdminDashboard = () => {
                     </Link>
                 </div>
 
-                <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                {error && <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6">{error}</div>}
+
+                <div className="bg-white shadow-md rounded-lg overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-100">
                             <tr>
@@ -67,7 +70,7 @@ const AdminDashboard = () => {
                                             {product.title}
                                         </Link>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${product.price}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.price} DA</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.category}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <Link to={`/admin/product/${product._id}/edit`} className="text-indigo-600 hover:text-indigo-900 mr-4">Edit</Link>
@@ -77,7 +80,7 @@ const AdminDashboard = () => {
                             ))}
                         </tbody>
                     </table>
-                    {products.length === 0 && <div className="p-6 text-center text-gray-500">No products found.</div>}
+                    {products.length === 0 && !error && <div className="p-6 text-center text-gray-500">No products found.</div>}
                 </div>
             </div>
         </div>

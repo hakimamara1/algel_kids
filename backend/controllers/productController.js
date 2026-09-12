@@ -1,128 +1,78 @@
 const Product = require('../models/productModel');
+const { HttpError } = require('../lib/httpError');
+const { slugify } = require('../lib/slugify');
 
-// @desc    Get all products
-// @route   GET /api/products
-// @access  Public
+// Only these fields can be set from the admin; anything else in the body is ignored
+const EDITABLE_FIELDS = ['title', 'slug', 'description', 'price', 'compareAtPrice', 'category', 'images', 'colors'];
+
+// Keeps fields that are present, so 0, '' and null can be saved
+const pickEditable = (body = {}) =>
+    Object.fromEntries(EDITABLE_FIELDS.filter((field) => body[field] !== undefined).map((field) => [field, body[field]]));
+
+// "jolie-blouse", then "jolie-blouse-2", "jolie-blouse-3"...
+const uniqueSlug = async (text, excludeId) => {
+    const base = slugify(text) || 'product';
+    let slug = base;
+    for (let n = 2; await Product.exists({ slug, _id: { $ne: excludeId } }); n += 1) {
+        slug = `${base}-${n}`;
+    }
+    return slug;
+};
+
+// @route   GET /api/products   (public)
 const getProducts = async (req, res) => {
-    try {
-        const products = await Product.find();
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    const products = await Product.find().select('-description -__v').sort({ createdAt: -1 }).lean();
+    res.json(products);
 };
 
-// @desc    Get single product
-// @route   GET /api/products/:id
-// @access  Public
+// @route   GET /api/products/:id   (public)
 const getProductById = async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (product) {
-            res.json(product);
-        } else {
-            res.status(404).json({ message: 'Product not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    const product = await Product.findById(req.params.id).select('-__v').lean();
+    if (!product) throw new HttpError(404, 'Product not found');
+    res.json(product);
 };
 
-// @desc    Create a product
-// @route   POST /api/products
-// @access  Private/Admin (TODO: Add Auth)
+// @route   POST /api/products   (admin)
 const createProduct = async (req, res) => {
-    try {
-        // Auto-generate slug if not provided
-        if (!req.body.slug && req.body.title) {
-            req.body.slug = req.body.title
-                .toLowerCase()
-                .replace(/ /g, '-')
-                .replace(/[^\w-]+/g, '');
-        }
+    const data = pickEditable(req.body);
+    if (!data.title) throw new HttpError(400, 'Title is required');
+    data.slug = await uniqueSlug(data.slug || data.title);
 
-        // Basic creation logic - in real app would handle image uploads here or via separate endpoint
-        const product = new Product(req.body);
-        const createdProduct = await product.save();
-
-        // Invalidate product list cache
-        await invalidateAllProducts();
-
-        res.status(201).json(createdProduct);
-    } catch (error) {
-        console.error("Product Creation Error:", error);
-        res.status(400).json({ message: error.message });
-    }
+    const product = await Product.create(data);
+    req.log.info({ event: 'product.created', productId: product._id, title: product.title }, 'Product created');
+    res.status(201).json(product);
 };
 
-// @desc    Delete a product
-// @route   DELETE /api/products/:id
-// @access  Private/Admin
-const deleteProduct = async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-
-        if (product) {
-            await product.deleteOne();
-
-            // Invalidate both specific product and list cache
-            await invalidateProduct(req.params.id);
-            await invalidateAllProducts();
-
-            res.json({ message: 'Product removed' });
-        } else {
-            res.status(404).json({ message: 'Product not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-// @desc    Update a product
-// @route   PUT /api/products/:id
-// @access  Private/Admin
+// @route   PUT /api/products/:id   (admin)
 const updateProduct = async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id);
+    if (!product) throw new HttpError(404, 'Product not found');
 
-        if (product) {
-            // Update fields if present in body
-            product.title = req.body.title || product.title;
-
-            // Re-generate slug if title changed and slug not manually provided?
-            // For now let's stick to simple update. Admin can manually update slug if needed.
-            // If we want auto-update slug:
-            if (req.body.title && req.body.title !== product.title && !req.body.slug) {
-                product.slug = req.body.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-            } else if (req.body.slug) {
-                product.slug = req.body.slug;
-            }
-
-            product.price = req.body.price || product.price;
-            product.description = req.body.description || product.description;
-            product.images = req.body.images || product.images;
-            product.category = req.body.category || product.category;
-            product.colors = req.body.colors || product.colors;
-
-            const updatedProduct = await product.save();
-
-            // Invalidate both specific product and list cache
-            await invalidateProduct(req.params.id);
-            await invalidateAllProducts();
-
-            res.json(updatedProduct);
-        } else {
-            res.status(404).json({ message: 'Product not found' });
-        }
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    const data = pickEditable(req.body);
+    if (data.slug !== undefined) {
+        data.slug = await uniqueSlug(data.slug, product._id);
+    } else if (data.title !== undefined && data.title !== product.title) {
+        data.slug = await uniqueSlug(data.title, product._id);
     }
+
+    product.set(data);
+    const updated = await product.save();
+    req.log.info({ event: 'product.updated', productId: product._id, fields: Object.keys(data) }, 'Product updated');
+    res.json(updated);
+};
+
+// @route   DELETE /api/products/:id   (admin)
+const deleteProduct = async (req, res) => {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) throw new HttpError(404, 'Product not found');
+    req.log.info({ event: 'product.deleted', productId: product._id, title: product.title }, 'Product deleted');
+    res.json({ message: 'Product removed' });
 };
 
 module.exports = {
     getProducts,
     getProductById,
     createProduct,
+    updateProduct,
     deleteProduct,
-    updateProduct
 };

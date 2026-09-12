@@ -1,74 +1,55 @@
-require('dotenv').config();
-const express = require('express');
+const { env, missingEnv } = require('./config/env');
+const logger = require('./lib/logger');
+
+process.on('unhandledRejection', (reason) => {
+    logger.fatal({ err: reason }, 'Unhandled promise rejection');
+    process.exit(1);
+});
+process.on('uncaughtException', (err) => {
+    logger.fatal({ err }, 'Uncaught exception');
+    process.exit(1);
+});
+
+const missing = missingEnv();
+if (missing.required.length) {
+    logger.fatal({ missing: missing.required }, 'Missing required environment variables');
+    process.exit(1);
+}
+if (missing.admin.length) {
+    logger.warn({ missing: missing.admin }, 'Admin login is disabled until these environment variables are set');
+}
+
 const mongoose = require('mongoose');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const productRoutes = require('./routes/productRoutes');
-// const redisClient = require('./config/redis');
+const app = require('./app');
 
-const app = express();
-const PORT = process.env.PORT || 5002;
+mongoose.connection.on('disconnected', () => logger.warn('MongoDB disconnected'));
+mongoose.connection.on('reconnected', () => logger.info('MongoDB reconnected'));
+mongoose.connection.on('error', (err) => logger.error({ err }, 'MongoDB error'));
 
-// Middleware
-app.use(express.json());
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://192.168.179.237:5173', 'https://algel-kids.vercel.app', 'https://algel-kids-git-checkout-hakimamara20242023-6761s-projects.vercel.app', 'https://algel-kids-git-main-hakimamara20242023-6761s-projects.vercel.app', 'http://localhost:4174'],
-  credentials: true
-}));
+const start = async () => {
+    // Connect first, so the server never accepts requests it cannot answer
+    await mongoose.connect(env.mongoUri);
+    logger.info('MongoDB connected');
 
-app.use(cookieParser());
+    const server = app.listen(env.port, () => {
+        logger.info({ port: env.port, env: env.nodeEnv }, 'Server listening');
+    });
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected'))
-  .catch((err) => console.error('MongoDB Connection Error:', err));
+    // Render sends SIGTERM on every deploy: finish in-flight requests, then close the DB
+    const shutdown = (signal) => {
+        logger.info({ signal }, 'Shutting down');
+        server.close(async () => {
+            await mongoose.disconnect();
+            logger.info('Shutdown complete');
+            process.exit(0);
+        });
+        setTimeout(() => process.exit(1), 10000).unref();
+    };
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+};
 
-// // Redis Connection
-// redisClient.connect()
-//   .catch((err) => console.error('Redis Connection Error:', err));
-
-const uploadRoutes = require('./routes/uploadRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-
-// Routes
-app.use('/api/products', productRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/orders', orderRoutes);
-
-// Health Check
-app.get('/', (req, res) => {
-  res.send('API is running...');
+start().catch((err) => {
+    logger.fatal({ err }, 'Startup failed');
+    process.exit(1);
 });
-
-// Uptime ping target: keeps the Render instance awake and confirms MongoDB answers
-app.get('/health', async (req, res) => {
-  try {
-    await mongoose.connection.db.admin().ping();
-    res.json({ ok: true });
-  } catch (error) {
-    res.status(503).json({ ok: false, message: error.message });
-  }
-});
-
-const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-// Graceful shutdown
-// process.on('SIGTERM', async () => {
-//   console.log('SIGTERM signal received: closing HTTP server and Redis connection');
-//   await redisClient.disconnect();
-//   server.close(() => {
-//     console.log('HTTP server closed');
-//     process.exit(0);
-//   });
-// });
-
-// process.on('SIGINT', async () => {
-//   console.log('\nSIGINT signal received: closing HTTP server and Redis connection');
-//   await redisClient.disconnect();
-//   server.close(() => {
-//     console.log('HTTP server closed');
-//     process.exit(0);
-//   });
-// });

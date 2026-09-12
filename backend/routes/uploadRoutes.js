@@ -1,55 +1,31 @@
 const express = require('express');
-const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const { uploadImage } = require('../controllers/uploadController');
+const requireAdmin = require('../middleware/requireAdmin');
+const { HttpError } = require('../lib/httpError');
+const { uploadImages } = require('../controllers/uploadController');
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+const router = express.Router();
 
-// Configure Multer Storage
-const storage = multer.diskStorage({
-    destination(req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename(req, file, cb) {
-        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
-    }
-});
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+// Some phones send HEIC photos without a proper type, so the extension is checked too
+const HEIC_NAME = /\.(heic|heif)$/i;
 
-// Check File Type
-function checkFileType(file, cb) {
-    const filetypes = /jpg|jpeg|png|webp/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-
-    if (extname && mimetype) {
-        return cb(null, true);
-    } else {
-        cb('Images only!');
-    }
-}
-
+// Photos stay in memory and are streamed to Cloudinary: Render's disk is not used
 const upload = multer({
-    storage,
-    fileFilter: function (req, file, cb) {
-        checkFileType(file, cb);
-    }
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 15 * 1024 * 1024, files: 10 },
+    fileFilter: (req, file, cb) => {
+        if (ALLOWED_TYPES.includes(file.mimetype) || HEIC_NAME.test(file.originalname)) return cb(null, true);
+        cb(new HttpError(400, 'Only JPG, PNG, WEBP or HEIC photos are allowed'));
+    },
 });
 
-// Route
-router.post('/', (req, res, next) => {
-    upload.single('image')(req, res, (err) => {
-        if (err) {
-            // Check if it's a specific Multer error or our custom string error
-            return res.status(400).json({ message: err.message || err });
-        }
-        next();
-    });
-}, uploadImage);
+// "image": one photo (the current admin), "images": up to 10 at once
+router.post(
+    '/',
+    requireAdmin,
+    upload.fields([{ name: 'image', maxCount: 1 }, { name: 'images', maxCount: 10 }]),
+    uploadImages
+);
 
 module.exports = router;

@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { trackPageView } from './utils/FacebookPixel';
+import { getAdminToken, setAdminToken } from './lib/adminToken';
 // Ads land on product pages, so this page ships in the main bundle (saves a round trip)
 import ProductDetails from './pages/ProductDetails';
 
 // Lazy load the other pages
 const HomePage = lazy(() => import('./pages/HomePage'));
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminOrders = lazy(() => import('./pages/AdminOrders'));
 const AdminProductEdit = lazy(() => import('./pages/AdminProductEdit'));
@@ -34,6 +36,15 @@ const RouteChangeTracker = () => {
   return null;
 };
 
+// Admin pages need a login token; an expired one is caught by adminApi (401)
+const RequireAdmin = ({ children }) => {
+  const { pathname } = useLocation();
+  if (!getAdminToken()) {
+    return <Navigate to={`/admin/login?next=${encodeURIComponent(pathname)}`} replace />;
+  }
+  return children;
+};
+
 function App() {
   return (
     <Router>
@@ -45,18 +56,23 @@ function App() {
             <Route path="/product/:id" element={<ProductDetails />} />
 
             {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={
-              <AdminLayout>
-                <AdminDashboard />
-              </AdminLayout>
+              <RequireAdmin>
+                <AdminLayout>
+                  <AdminDashboard />
+                </AdminLayout>
+              </RequireAdmin>
             } />
             <Route path="/admin/orders" element={
-              <AdminLayout>
-                <AdminOrders />
-              </AdminLayout>
+              <RequireAdmin>
+                <AdminLayout>
+                  <AdminOrders />
+                </AdminLayout>
+              </RequireAdmin>
             } />
-            <Route path="/admin/product/new" element={<AdminProductEdit />} />
-            <Route path="/admin/product/:id/edit" element={<AdminProductEdit />} />
+            <Route path="/admin/product/new" element={<RequireAdmin><AdminProductEdit /></RequireAdmin>} />
+            <Route path="/admin/product/:id/edit" element={<RequireAdmin><AdminProductEdit /></RequireAdmin>} />
           </Routes>
         </Suspense>
       </div>
@@ -66,12 +82,20 @@ function App() {
 
 // Simple Layout for Admin Navigation
 const AdminLayout = ({ children }) => {
+  const navigate = useNavigate();
+
+  const logout = () => {
+    setAdminToken(null);
+    navigate('/admin/login', { replace: true });
+  };
+
   return (
-    <div>
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex space-x-6 sticky top-0 z-30">
+    <div dir="ltr">
+      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-6 sticky top-0 z-30">
         <a href="/admin" className="font-bold text-gray-900 hover:text-pink-500">Products</a>
         <a href="/admin/orders" className="font-bold text-gray-900 hover:text-pink-500">Orders</a>
         <a href="/" className="ml-auto text-sm text-gray-500 hover:text-gray-900">View Shop</a>
+        <button onClick={logout} className="text-sm text-gray-500 hover:text-gray-900">Log out</button>
       </div>
       {children}
     </div>

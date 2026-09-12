@@ -1,51 +1,44 @@
 const cloudinary = require('cloudinary').v2;
-const fs = require('fs');
+const { env } = require('../config/env');
+const { HttpError } = require('../lib/httpError');
 
-// Configure Cloudinary (it might be configured in server.js or a separate config, 
-// but ensuring it's configured here or relying on the global config if extracted)
-// For safety, we'll re-apply config if environment variables are loaded
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
+cloudinary.config(env.cloudinary);
 
-// @desc    Upload image to Cloudinary
-// @route   POST /api/upload
-// @access  Private/Admin
-const uploadImage = async (req, res) => {
+const isHeic = (file) => /heic|heif/i.test(file.mimetype) || /\.(heic|heif)$/i.test(file.originalname);
+
+const uploadToCloudinary = (file) =>
+    new Promise((resolve, reject) => {
+        const options = {
+            folder: 'malaksit-products',
+            // iPhone photos are stored as JPG so every browser can show them
+            ...(isHeic(file) && { format: 'jpg' }),
+        };
+        const stream = cloudinary.uploader.upload_stream(options, (err, result) => (err ? reject(err) : resolve(result)));
+        stream.end(file.buffer);
+    });
+
+// @route   POST /api/upload   (admin)
+const uploadImages = async (req, res) => {
+    const single = req.files?.image?.[0];
+    const files = single ? [single] : req.files?.images || [];
+    if (!files.length) throw new HttpError(400, 'No photo uploaded');
+
+    const started = Date.now();
+    let results;
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
-        }
-
-        // Upload to Cloudinary
-        const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: 'malaksit-products'
-        });
-
-        // Remove file from local temp folder (fs is required)
-        // Note: Multer usually stores in /tmp or defined folder. 
-        // We should ensure we clean up if we are using diskStorage. 
-        // If we use memoryStorage, req.file.buffer is used instead.
-        // Let's assume diskStorage for this implementation as it handles large files better.
-        if (req.file.path) {
-            fs.unlinkSync(req.file.path);
-        }
-
-        res.json({
-            url: result.secure_url,
-            publicId: result.public_id
-        });
-
-    } catch (error) {
-        console.error(error);
-        // Clean up even on error
-        if (req.file && req.file.path) {
-            fs.unlinkSync(req.file.path);
-        }
-        res.status(500).json({ message: 'Image upload failed', error: error.message, stack: error.stack });
+        results = await Promise.all(files.map(uploadToCloudinary));
+    } catch (err) {
+        req.log.error({ err }, 'Cloudinary upload failed');
+        throw new HttpError(502, 'Photo upload failed, please try again');
     }
+
+    const ms = Date.now() - started;
+    for (const result of results) {
+        req.log.info({ event: 'upload.done', publicId: result.public_id, bytes: result.bytes, format: result.format, ms }, 'Photo uploaded');
+    }
+
+    const images = results.map((result) => ({ url: result.secure_url, publicId: result.public_id }));
+    res.json(single ? images[0] : { images });
 };
 
-module.exports = { uploadImage };
+module.exports = { uploadImages };

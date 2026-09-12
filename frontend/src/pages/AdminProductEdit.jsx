@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import adminApi, { apiErrorMessage } from '../lib/adminApi';
+
+const PHOTO_TYPES = 'image/*,.heic,.heif';
 
 const AdminProductEdit = () => {
     const { id } = useParams();
@@ -9,6 +11,7 @@ const AdminProductEdit = () => {
 
     const [title, setTitle] = useState('');
     const [price, setPrice] = useState(0);
+    const [compareAtPrice, setCompareAtPrice] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('girls-clothing');
     const [images, setImages] = useState([]); // Product level images
@@ -19,51 +22,49 @@ const AdminProductEdit = () => {
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
-        if (isEdit) {
-            fetchProduct();
-        }
+        if (!id) return;
+        adminApi.get(`/products/${id}`)
+            .then(({ data }) => {
+                setTitle(data.title);
+                setPrice(data.price);
+                setCompareAtPrice(data.compareAtPrice ?? '');
+                setDescription(data.description || '');
+                setCategory(data.category);
+                setImages(data.images || []);
+                setColors(data.colors || []);
+            })
+            .catch((error) => {
+                console.error(error);
+                alert(apiErrorMessage(error, 'Failed to load product'));
+            });
     }, [id]);
 
-    const fetchProduct = async () => {
-        try {
-            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
-            setTitle(data.title);
-            setPrice(data.price);
-            setDescription(data.description);
-            setCategory(data.category);
-            setImages(data.images || []);
-            setColors(data.colors || []);
-        } catch (error) {
-            console.error(error);
-            alert('Failed to load product');
-        }
-    };
-
+    // Several photos at once (iPhone HEIC photos are converted to JPG by the server)
     const uploadFileHandler = async (e, section, colorIndex = null) => {
-        const file = e.target.files[0];
+        const files = Array.from(e.target.files || []);
+        e.target.value = ''; // allow choosing the same photo again
+        if (!files.length) return;
+
         const formData = new FormData();
-        formData.append('image', file);
+        files.forEach((file) => formData.append('images', file));
         setUploading(true);
 
         try {
-            const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-            const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/upload`, formData, config);
-
-            const newImage = { publicId: data.publicId, url: data.url };
+            const { data } = await adminApi.post('/upload', formData);
+            const newImages = data.images.map(({ publicId, url }) => ({ publicId, url }));
 
             if (section === 'main') {
-                setImages([...images, newImage]);
+                setImages((prev) => [...prev, ...newImages]);
             } else if (section === 'color' && colorIndex !== null) {
-                const newColors = [...colors];
-                newColors[colorIndex].images = [...(newColors[colorIndex].images || []), newImage];
-                setColors(newColors);
+                setColors((prev) => prev.map((color, index) => (
+                    index === colorIndex ? { ...color, images: [...(color.images || []), ...newImages] } : color
+                )));
             }
-            setUploading(false);
         } catch (error) {
             console.error(error);
+            alert(`Error: ${apiErrorMessage(error, 'Image upload failed')}`);
+        } finally {
             setUploading(false);
-            const errorMsg = error.response?.data?.message || error.response?.data?.error || error.message || 'Image Upload Failed';
-            alert(`Error: ${errorMsg}`);
         }
     };
 
@@ -74,6 +75,7 @@ const AdminProductEdit = () => {
         const productData = {
             title,
             price,
+            compareAtPrice: compareAtPrice === '' ? null : compareAtPrice,
             description,
             category,
             images,
@@ -82,14 +84,14 @@ const AdminProductEdit = () => {
 
         try {
             if (isEdit) {
-                await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`, productData);
+                await adminApi.put(`/products/${id}`, productData);
             } else {
-                await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products`, productData);
+                await adminApi.post('/products', productData);
             }
             navigate('/admin');
         } catch (error) {
             console.error(error);
-            alert('Action failed');
+            alert(apiErrorMessage(error, 'Action failed'));
             setLoading(false);
         }
     };
@@ -143,7 +145,7 @@ const AdminProductEdit = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div dir="ltr" className="min-h-screen bg-gray-50 pb-20">
             <div className="max-w-5xl mx-auto p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold text-gray-900">{isEdit ? 'Edit Product' : 'Create Product'}</h1>
@@ -161,16 +163,20 @@ const AdminProductEdit = () => {
                                 <input className="w-full p-2 border rounded mt-1" type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Price</label>
-                                <input className="w-full p-2 border rounded mt-1" type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
+                                <label className="block text-sm font-medium text-gray-700">Price (DA)</label>
+                                <input className="w-full p-2 border rounded mt-1" type="number" min="0" value={price} onChange={(e) => setPrice(e.target.value)} required />
                             </div>
-                            <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700">Description</label>
-                                <textarea className="w-full p-2 border rounded mt-1" rows="3" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Old price (DA, optional)</label>
+                                <input className="w-full p-2 border rounded mt-1" type="number" min="0" placeholder="Shown crossed out" value={compareAtPrice} onChange={(e) => setCompareAtPrice(e.target.value)} />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Category</label>
                                 <input className="w-full p-2 border rounded mt-1" type="text" value={category} onChange={(e) => setCategory(e.target.value)} />
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea className="w-full p-2 border rounded mt-1" rows="3" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
                             </div>
                         </div>
                     </div>
@@ -180,14 +186,14 @@ const AdminProductEdit = () => {
                         <h2 className="text-xl font-semibold border-b pb-2">Product Images</h2>
                         <div className="flex flex-wrap gap-4">
                             {images.map((img, idx) => (
-                                <div key={idx} className="relative w-24 h-24">
-                                    <img src={img.url} className="w-full h-full object-cover rounded" />
-                                    <button type="button" onClick={() => removeImage('main', idx)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">×</button>
+                                <div key={img.publicId || idx} className="relative w-24 h-24">
+                                    <img src={img.url} alt="" className="w-full h-full object-cover rounded" />
+                                    <button type="button" onClick={() => removeImage('main', idx)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center" aria-label="Remove photo">×</button>
                                 </div>
                             ))}
                             <div className="w-24 h-24 border-2 border-dashed flex items-center justify-center rounded cursor-pointer relative hover:border-blue-500">
                                 <span className="text-3xl text-gray-400">+</span>
-                                <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => uploadFileHandler(e, 'main')} />
+                                <input type="file" multiple accept={PHOTO_TYPES} className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => uploadFileHandler(e, 'main')} aria-label="Add product photos" />
                             </div>
                         </div>
                         {uploading && <p className="text-sm text-blue-500">Uploading...</p>}
@@ -216,14 +222,14 @@ const AdminProductEdit = () => {
                                     <label className="text-xs font-medium text-gray-500 uppercase">Variant Images</label>
                                     <div className="flex flex-wrap gap-2 mt-2">
                                         {color.images?.map((img, imgIdx) => (
-                                            <div key={imgIdx} className="relative w-16 h-16">
-                                                <img src={img.url} className="w-full h-full object-cover rounded" />
-                                                <button type="button" onClick={() => removeImage('color', imgIdx, cIdx)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">×</button>
+                                            <div key={img.publicId || imgIdx} className="relative w-16 h-16">
+                                                <img src={img.url} alt="" className="w-full h-full object-cover rounded" />
+                                                <button type="button" onClick={() => removeImage('color', imgIdx, cIdx)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center" aria-label="Remove photo">×</button>
                                             </div>
                                         ))}
                                         <div className="w-16 h-16 border-2 border-dashed flex items-center justify-center rounded relative">
                                             <span className="text-gray-400">+</span>
-                                            <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => uploadFileHandler(e, 'color', cIdx)} />
+                                            <input type="file" multiple accept={PHOTO_TYPES} className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => uploadFileHandler(e, 'color', cIdx)} aria-label="Add photos for this color" />
                                         </div>
                                     </div>
                                 </div>
@@ -238,8 +244,8 @@ const AdminProductEdit = () => {
                                         {color.sizes?.map((size, sIdx) => (
                                             <div key={sIdx} className="flex gap-2 items-center">
                                                 <input placeholder="Size (e.g. S)" className="p-1 border rounded w-20" value={size.value} onChange={(e) => updateSizeField(cIdx, sIdx, 'value', e.target.value)} />
-                                                <input placeholder="Stock" type="number" className="p-1 border rounded w-20" value={size.stock} onChange={(e) => updateSizeField(cIdx, sIdx, 'stock', e.target.value)} />
-                                                <button type="button" onClick={() => removeSize(cIdx, sIdx)} className="text-red-500 text-xs">×</button>
+                                                <input placeholder="Stock" type="number" min="0" className="p-1 border rounded w-20" value={size.stock} onChange={(e) => updateSizeField(cIdx, sIdx, 'stock', e.target.value)} />
+                                                <button type="button" onClick={() => removeSize(cIdx, sIdx)} className="text-red-500 text-xs" aria-label="Remove size">×</button>
                                             </div>
                                         ))}
                                     </div>
@@ -249,7 +255,7 @@ const AdminProductEdit = () => {
                     </div>
 
                     <div className="flex justify-end">
-                        <button type="submit" className="bg-black text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-gray-800 transition">
+                        <button type="submit" disabled={loading || uploading} className="bg-black text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-gray-800 transition disabled:opacity-60">
                             {loading ? 'Saving...' : (isEdit ? 'Update Product' : 'Create Product')}
                         </button>
                     </div>

@@ -30,4 +30,6 @@ const productSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
+productSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('Product', productSchema);
