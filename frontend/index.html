@@ -3,18 +3,71 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angel Kids</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <script>
+    // Ad visitors land on /product/:id. Start loading the product and its first photo now,
+    // in parallel with the JS bundle, instead of waiting for React to start.
+    // The photo URLs must match src/lib/cloudinary.js (GALLERY_WIDTHS / GALLERY_SIZES).
+    (function () {
+      var match = location.pathname.match(/^\/product\/([a-f0-9]{24})\/?$/i);
+      if (!match || !window.fetch) return;
+      var widths = [480, 640, 828, 1080];
+      function cld(url, w) {
+        var parts = url.split('/upload/');
+        if (url.indexOf('res.cloudinary.com') === -1 || parts.length !== 2) return url;
+        return parts[0] + '/upload/f_auto,q_auto,c_limit,w_' + w + '/' + parts[1];
+      }
+      var promise = fetch('/api/products?id=' + match[1])
+        .then(function (res) {
+          if (!res.ok) throw new Error(res.status);
+          return res.json();
+        })
+        .then(function (product) {
+          var color = product.colors && product.colors[0];
+          var images = color && color.images && color.images.length ? color.images : (product.images || []);
+          if (images[0] && images[0].url) {
+            var link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.setAttribute('fetchpriority', 'high');
+            link.setAttribute('imagesrcset', widths.map(function (w) { return cld(images[0].url, w) + ' ' + w + 'w'; }).join(', '));
+            link.setAttribute('imagesizes', '100vw');
+            document.head.appendChild(link);
+          }
+          return product;
+        })
+        .catch(function () { return null; });
+      window.__earlyProduct = { id: match[1], promise: promise };
+    })();
+  </script>
+
+  <!-- Meta Pixel: loads async and sends PageView right away, before React starts -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1190930022111249');
+    fbq('track', 'PageView');
+  </script>
 
   <!-- Preconnect to external resources -->
+  <link rel="preconnect" href="https://res.cloudinary.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://res.cloudinary.com">
-  <link rel="dns-prefetch" href="https://algel-kids.onrender.com">
+  <!-- Orders are sent straight to the backend -->
+  <link rel="dns-prefetch" href="%VITE_BACKEND_URL%">
 
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-  <title>Angel Kids</title>
-
+  <!-- Cairo as one variable font (weights 400-800). Loaded without blocking the first paint. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400..800&display=swap" media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400..800&display=swap">
+  </noscript>
 </head>
 
 <body>

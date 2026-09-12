@@ -1,4 +1,11 @@
 require('dotenv').config();
+
+// This script deletes ALL products before inserting demo data. Never run it against production.
+if (process.env.ALLOW_SEED !== 'yes') {
+    console.error('Refusing to run: seed.js deletes every product. Use ALLOW_SEED=yes only on a local/test database.');
+    process.exit(1);
+}
+
 const mongoose = require('mongoose');
 const Product = require('./models/productModel');
 

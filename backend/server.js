@@ -40,6 +40,16 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
+// Uptime ping target: keeps the Render instance awake and confirms MongoDB answers
+app.get('/health', async (req, res) => {
+  try {
+    await mongoose.connection.db.admin().ping();
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(503).json({ ok: false, message: error.message });
+  }
+});
+
 const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

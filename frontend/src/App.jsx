@@ -1,10 +1,11 @@
-import React, { useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { initPixel, trackPageView } from './utils/FacebookPixel';
+import React, { useEffect, useRef, lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { trackPageView } from './utils/FacebookPixel';
+// Ads land on product pages, so this page ships in the main bundle (saves a round trip)
+import ProductDetails from './pages/ProductDetails';
 
-// Lazy load all page components for code splitting
+// Lazy load the other pages
 const HomePage = lazy(() => import('./pages/HomePage'));
-const ProductDetails = lazy(() => import('./pages/ProductDetails'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminOrders = lazy(() => import('./pages/AdminOrders'));
 const AdminProductEdit = lazy(() => import('./pages/AdminProductEdit'));
@@ -19,22 +20,24 @@ const LoadingFallback = () => (
   </div>
 );
 
-// Helper to track page views on route change
-const PageViewTracker = () => {
-  // In a real app we'd use useLocation to track generic page views
-  // But since we only have one main page for now, we rely on individual components or track here
+// The first PageView is sent by the Pixel snippet in index.html; this tracks later in-app navigations
+const RouteChangeTracker = () => {
+  const { pathname } = useLocation();
+  const lastPath = useRef(pathname);
+
+  useEffect(() => {
+    if (lastPath.current === pathname) return;
+    lastPath.current = pathname;
+    trackPageView();
+  }, [pathname]);
+
   return null;
 };
 
 function App() {
-  useEffect(() => {
-    // Initialize Pixel with your ID (Replace with env variable or real ID)
-    initPixel('1190930022111249');
-    trackPageView(); // Initial load
-  }, []);
-
   return (
     <Router>
+      <RouteChangeTracker />
       <div className="font-sans antialiased text-gray-900">
         <Suspense fallback={<LoadingFallback />}>
           <Routes>

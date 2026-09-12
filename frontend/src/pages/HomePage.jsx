@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { getProducts } from '../lib/api';
+import { cldUrl, cldSrcSet } from '../lib/cloudinary';
+
+const CARD_WIDTHS = [320, 480, 640];
+const CARD_SIZES = '(min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw';
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
@@ -8,19 +12,16 @@ const HomePage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
+        getProducts()
+            .then((data) => {
                 setProducts(data);
                 setLoading(false);
-            } catch (err) {
+            })
+            .catch((err) => {
                 console.error(err);
-                setError('Failed to load products');
+                setError('تعذّر تحميل المنتجات. أعد المحاولة.');
                 setLoading(false);
-            }
-        };
-
-        fetchProducts();
+            });
     }, []);
 
     if (loading) return <div className="p-10 text-center">جاري تحميل المنتجات...</div>;
@@ -53,9 +54,12 @@ const HomePage = () => {
                                     <div className="h-64 bg-gray-200 w-full overflow-hidden">
                                         {displayImage ? (
                                             <img
-                                                src={displayImage}
+                                                src={cldUrl(displayImage, 480)}
+                                                srcSet={cldSrcSet(displayImage, CARD_WIDTHS)}
+                                                sizes={CARD_SIZES}
                                                 alt={product.title}
                                                 loading="lazy"
+                                                decoding="async"
                                                 className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                                             />
                                         ) : (

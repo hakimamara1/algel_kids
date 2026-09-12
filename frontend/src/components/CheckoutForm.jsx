@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { createOrder } from '../lib/api';
 import { wilayas, getShippingRate } from '../data/algeriaData';
 import { trackEvent } from '../utils/FacebookPixel';
 
@@ -16,6 +16,21 @@ const CheckoutForm = React.memo(({ product, variant, onClose }) => {
     const [availableCommunes, setAvailableCommunes] = useState([]);
     const [submitStatus, setSubmitStatus] = useState('idle'); // idle, submitting, success, error
     const [errorMessage, setErrorMessage] = useState('');
+    const checkoutStarted = useRef(false);
+
+    // First interaction with the form = the customer started checking out
+    const handleFormFocus = useCallback(() => {
+        if (checkoutStarted.current) return;
+        checkoutStarted.current = true;
+        trackEvent('InitiateCheckout', {
+            content_ids: [product._id],
+            content_name: product.title,
+            content_type: 'product',
+            currency: 'DZD',
+            value: product.price,
+            num_items: 1
+        });
+    }, [product._id, product.title, product.price]);
 
     // Shipping Calculation (memoized to prevent recalculation on every render)
     const selectedWilayaData = useMemo(
@@ -87,14 +102,18 @@ const CheckoutForm = React.memo(({ product, variant, onClose }) => {
         };
 
         try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/orders`, orderData);
+            const savedOrder = await createOrder(orderData);
 
+            // The order id doubles as the event id, so a future server-side
+            // Conversions API event for the same order is deduplicated by Meta
             trackEvent('Purchase', {
                 currency: 'DZD',
                 value: totalPrice,
                 content_name: product.title,
-                content_ids: [product._id]
-            });
+                content_ids: [product._id],
+                content_type: 'product',
+                num_items: 1
+            }, savedOrder?._id);
 
             setSubmitStatus('success');
 
@@ -162,7 +181,7 @@ ${formData.deliveryType === 'home' ? `العنوان: ${formData.address}` : ''}
     }
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white p-6 md:p-8 rounded-b-3xl md:rounded-3xl space-y-5">
+        <form onSubmit={handleSubmit} onFocus={handleFormFocus} className="bg-white p-6 md:p-8 rounded-b-3xl md:rounded-3xl space-y-5">
             <h2 className="text-xl font-bold text-gray-900 mb-4">شراء سريع</h2>
 
             {/* Name */}

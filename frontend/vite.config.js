@@ -27,32 +27,12 @@ export default defineConfig(({ mode }) => ({
 
     rollupOptions: {
       output: {
-        // Manual chunk splitting for better caching and smaller bundles
+        // React, ReactDOM and the router rarely change: keep them in one long-cached chunk.
+        // Everything else is left to Rollup, so admin-only libraries (axios) stay out of
+        // the product page that ads land on.
         manualChunks: (id) => {
-          // Vendor chunks
-          if (id.includes('node_modules')) {
-            // React core
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'vendor-react';
-            }
-            // Framer Motion (heavy animation library)
-            if (id.includes('framer-motion')) {
-              return 'vendor-motion';
-            }
-            // Swiper (carousel library)
-            if (id.includes('swiper')) {
-              return 'vendor-swiper';
-            }
-            // Router
-            if (id.includes('react-router-dom')) {
-              return 'vendor-router';
-            }
-            // Axios
-            if (id.includes('axios')) {
-              return 'vendor-axios';
-            }
-            // Other vendor libraries
-            return 'vendor-other';
+          if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/.test(id)) {
+            return 'vendor-react';
           }
         },
         // Optimize chunk file names

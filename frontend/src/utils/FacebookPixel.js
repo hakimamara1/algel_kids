@@ -1,18 +1,15 @@
-import ReactPixel from 'react-facebook-pixel';
-
-const options = {
-    autoConfig: true,
-    debug: false,
-};
-
-export const initPixel = (pixelId) => {
-    ReactPixel.init(pixelId, options);
+// The Meta Pixel base code lives in index.html so PageView fires before React loads.
+// These helpers only queue events on the global fbq.
+const fbq = (...args) => {
+    if (typeof window.fbq === 'function') window.fbq(...args);
 };
 
 export const trackPageView = () => {
-    ReactPixel.pageView();
+    fbq('track', 'PageView');
 };
 
-export const trackEvent = (event, data) => {
-    ReactPixel.track(event, data);
+// eventId lets Meta deduplicate this event against a future Conversions API (server) event
+export const trackEvent = (event, data, eventId) => {
+    if (eventId) fbq('track', event, data, { eventID: String(eventId) });
+    else fbq('track', event, data);
 };
