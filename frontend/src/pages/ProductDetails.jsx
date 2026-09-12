@@ -1,16 +1,23 @@
 import React, { useState, useEffect, lazy, Suspense, useCallback, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ImageCarousel from '../components/ImageCarousel';
 import { getProduct } from '../lib/api';
 import { trackEvent } from '../utils/FacebookPixel';
 
 import ProductHeader from '../components/product/ProductHeader';
 import ProductVariants from '../components/product/ProductVariants';
+import ProductTrust from '../components/product/ProductTrust';
+import ProductDescription from '../components/product/ProductDescription';
+import StickyOrderBar from '../components/product/StickyOrderBar';
 
-// Lazy load components that are not immediately visible
-const ProductTrust = lazy(() => import('../components/product/ProductTrust'));
-const ProductDescription = lazy(() => import('../components/product/ProductDescription'));
+// The order form carries the wilaya/commune list, so it loads right after the page appears
 const CheckoutForm = lazy(() => import('../components/CheckoutForm'));
+
+const scrollGently = (element, block = 'start') => {
+    if (!element) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    element.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block });
+};
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -19,7 +26,12 @@ const ProductDetails = () => {
     const [retryCount, setRetryCount] = useState(0);
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
+    const [sizeMissing, setSizeMissing] = useState(false);
+    const [barVisible, setBarVisible] = useState(false);
     const addToCartSent = useRef(false);
+    const priceRef = useRef(null);
+    const sizeRef = useRef(null);
+    const checkoutRef = useRef(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -52,6 +64,24 @@ const ProductDetails = () => {
         };
     }, [id, retryCount]);
 
+    // Show the order bar once the price has scrolled away, hide it again when the form is on screen
+    useEffect(() => {
+        const price = priceRef.current;
+        const checkout = checkoutRef.current;
+        if (status !== 'ready' || !price || !checkout || !('IntersectionObserver' in window)) return;
+
+        const onScreen = { price: true, checkout: false };
+        const observer = new IntersectionObserver((entries) => {
+            for (const entry of entries) {
+                onScreen[entry.target === price ? 'price' : 'checkout'] = entry.isIntersecting;
+            }
+            setBarVisible(!onScreen.price && !onScreen.checkout);
+        });
+        observer.observe(price);
+        observer.observe(checkout);
+        return () => observer.disconnect();
+    }, [status]);
+
     const handleColorChange = useCallback((color) => {
         setSelectedColor(color);
         setSelectedSize(null);
@@ -59,6 +89,7 @@ const ProductDetails = () => {
 
     const handleSizeChange = useCallback((size) => {
         setSelectedSize(size);
+        setSizeMissing(false);
 
         // Color + size chosen is the "add to cart" moment on a one-page order form
         if (product && !addToCartSent.current) {
@@ -72,6 +103,19 @@ const ProductDetails = () => {
             });
         }
     }, [product]);
+
+    const handleSizeMissing = useCallback(() => {
+        setSizeMissing(true);
+        scrollGently(sizeRef.current, 'center');
+    }, []);
+
+    const handleOrderClick = () => {
+        if (selectedColor?.sizes?.length && !selectedSize) {
+            handleSizeMissing();
+            return;
+        }
+        scrollGently(checkoutRef.current);
+    };
 
     const retry = () => {
         setStatus('loading');
@@ -112,22 +156,41 @@ const ProductDetails = () => {
         ? selectedColor.images
         : (product.images || []);
 
-    const discount = product.compareAtPrice ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100) : 0;
+    const discount = product.compareAtPrice > product.price
+        ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
+        : 0;
+
+    const colorSizes = selectedColor?.sizes || [];
+    const soldOut = colorSizes.length > 0 && colorSizes.every((size) => Number(size.stock) <= 0);
+    const summary = [selectedColor?.name, selectedSize?.value].filter(Boolean).join(' · ');
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans pb-24 relative">
+        <div className="min-h-screen bg-gray-50 font-sans pb-28 relative">
             {/* Hero Image Section */}
             <div className="relative w-full bg-white rounded-b-[2rem] shadow-sm overflow-hidden z-20">
                 <ImageCarousel images={displayImages} alt={product.title} />
+                <Link
+                    to="/"
+                    aria-label="العودة إلى المتجر"
+                    className="absolute top-3 start-3 w-10 h-10 rounded-full bg-white/85 text-gray-800 shadow flex items-center justify-center"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10" /></svg>
+                </Link>
             </div>
 
-            <div className="px-4 pt-6 pb-20 max-w-2xl mx-auto">
-                <ProductHeader
-                    title={product.title}
-                    price={product.price}
-                    compareAtPrice={product.compareAtPrice}
-                    discount={discount}
-                />
+            <div className="px-4 pt-6 pb-8 max-w-2xl mx-auto">
+                <div ref={priceRef}>
+                    <ProductHeader
+                        title={product.title}
+                        price={product.price}
+                        compareAtPrice={product.compareAtPrice}
+                        discount={discount}
+                        soldOut={soldOut}
+                        stockLeft={selectedSize ? Number(selectedSize.stock) : null}
+                    />
+                </div>
+
+                <ProductTrust />
 
                 <ProductVariants
                     colors={product.colors}
@@ -135,42 +198,45 @@ const ProductDetails = () => {
                     onColorChange={handleColorChange}
                     selectedSize={selectedSize}
                     onSizeChange={handleSizeChange}
+                    sizeRef={sizeRef}
+                    sizeMissing={sizeMissing}
                 />
 
-                <Suspense fallback={<div className="h-20 flex items-center justify-center"><div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-pink-500"></div></div>}>
-                    <ProductTrust />
-                    <ProductDescription description={product.description} />
-                </Suspense>
+                <ProductDescription description={product.description} />
             </div>
 
             {/* Inline Checkout Form */}
-            <div id="checkout-section" className="px-4 pb-10 max-w-2xl mx-auto">
-                <Suspense fallback={<div className="h-40 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-pink-500"></div></div>}>
+            <div id="checkout-section" ref={checkoutRef} className="px-4 pb-10 max-w-2xl mx-auto scroll-mt-4">
+                <Suspense fallback={<div className="h-96 bg-white rounded-3xl border border-gray-100" />}>
                     <CheckoutForm
                         product={product}
                         variant={{ color: selectedColor, size: selectedSize }}
-                        onClose={() => { }}
+                        onSizeMissing={handleSizeMissing}
                     />
                 </Suspense>
             </div>
 
-
-
             {/* Contact Us Section */}
             <div className="text-center pb-12">
                 <h3 className="text-gray-500 font-medium mb-4 text-sm uppercase tracking-widest">لديك سؤال؟ اتصل بنا</h3>
-                <div className="flex justify-center space-x-6">
+                <div className="flex justify-center gap-6">
                     <a href="https://web.facebook.com/profile.php?id=100071809980483" aria-label="Facebook" className="bg-white p-3 rounded-full shadow-sm text-blue-600 hover:scale-110 transition-transform">
                         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
-                    </a>
-                    <a href="#" aria-label="Instagram" className="bg-white p-3 rounded-full shadow-sm text-pink-500 hover:scale-110 transition-transform">
-                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg>
                     </a>
                     <a href="tel:0662241056" aria-label="اتصل بنا" className="bg-white p-3 rounded-full shadow-sm text-green-600 hover:scale-110 transition-transform">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
                     </a>
                 </div>
             </div>
+
+            <StickyOrderBar
+                visible={barVisible}
+                price={product.price}
+                compareAtPrice={product.compareAtPrice}
+                summary={summary}
+                soldOut={soldOut}
+                onOrder={handleOrderClick}
+            />
         </div>
     );
 };

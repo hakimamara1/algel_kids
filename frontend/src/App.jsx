@@ -7,6 +7,7 @@ import ProductDetails from './pages/ProductDetails';
 
 // Lazy load the other pages
 const HomePage = lazy(() => import('./pages/HomePage'));
+const ThankYou = lazy(() => import('./pages/ThankYou'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminOrders = lazy(() => import('./pages/AdminOrders'));
@@ -54,6 +55,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/merci" element={<ThankYou />} />
 
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
