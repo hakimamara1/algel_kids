@@ -44,6 +44,7 @@ const priceOrder = async ({ productId, color, size, customer }) => {
                     wilayaId: wilaya.id,
                     communeId: commune.id,
                     communeName: commune.name,
+                    ...(commune.postalCode && { postalCode: commune.postalCode }),
                     ...(hub && { hubId: hub.id, hubName: hub.name }),
                 },
             },

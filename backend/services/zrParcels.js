@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const Order = require('../models/orderModel');
 const zr = require('./zrExpress');
 const zrData = require('./zrData');
+const metaEvents = require('./metaEvents');
 const { releaseStock } = require('./stock');
 const { env } = require('../config/env');
 const { HttpError } = require('../lib/httpError');
@@ -84,6 +85,8 @@ const applyParcelUpdate = async (order, parcel, occurredAt, log) => {
     if (to) {
         const stock = to === 'Returned' && (await releaseStock(order)) ? 'restored' : 'none';
         log.info({ event: 'order.status_changed', orderId: order._id, from: order.status, to, stock, source: 'zrexpress' }, 'Order status changed by ZR');
+        // OrderDelivered / OrderReturned for Meta, in the background
+        metaEvents.onStatusChange(order, to, log);
     }
     return { to };
 };
@@ -126,7 +129,7 @@ const sendOrder = async (orderId, log) => {
                 'delivery.sentAt': new Date(),
             },
             $unset: { 'delivery.sending': 1 },
-        }, { returnDocument: 'after' }).lean();
+        }, { returnDocument: 'after' }).select('-tracking').lean();
 
         log.info({ event: 'zr.parcel_created', orderId, parcelId, trackingNumber: parcel?.trackingNumber }, 'Parcel created at ZR Express');
         return updated;
@@ -146,7 +149,7 @@ const cancelParcel = async (orderId, log) => {
     const updated = await Order.findByIdAndUpdate(orderId, {
         $set: { status: 'Confirmed' },
         $unset: { delivery: 1 },
-    }, { returnDocument: 'after' }).lean();
+    }, { returnDocument: 'after' }).select('-tracking').lean();
 
     log.info({ event: 'zr.parcel_deleted', orderId, parcelId: order.delivery.parcelId }, 'ZR parcel cancelled');
     return updated;
@@ -160,7 +163,7 @@ const refreshOrder = async (orderId, log) => {
 
     const parcel = await zr.getParcel(order.delivery.parcelId);
     await applyParcelUpdate(order, parcel, parcel?.lastStateUpdateAt || new Date(), log);
-    return Order.findById(orderId).lean();
+    return Order.findById(orderId).select('-tracking').lean();
 };
 
 module.exports = {

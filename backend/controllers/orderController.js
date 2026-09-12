@@ -5,6 +5,7 @@ const { maskPhone } = require('../lib/privacy');
 const { priceOrder } = require('../services/orderPricing');
 const { reserveStock, releaseStock } = require('../services/stock');
 const zr = require('../services/zrExpress');
+const metaEvents = require('../services/metaEvents');
 const { sendOrder, cancelParcel, refreshOrder } = require('../services/zrParcels');
 
 const { ORDER_STATUSES } = Order;
@@ -20,6 +21,13 @@ const normalizePhone = (value) => {
 };
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// What the customer's browser gets back: no tracking or Meta details
+const toPublicOrder = (order) => {
+    const plain = typeof order.toObject === 'function' ? order.toObject() : order;
+    const { tracking, metaEvents: sentEvents, ...rest } = plain;
+    return rest;
+};
 
 const objectId = z.string().regex(/^[a-f0-9]{24}$/i, 'Invalid id');
 // ZR ids are GUIDs
@@ -46,6 +54,12 @@ const createOrderSchema = z.object({
             hubId: guid.optional(),
         }).optional(),
     }),
+    // Meta cookies and page address, for the Conversions API (the server adds IP and browser)
+    tracking: z.object({
+        fbp: z.string().max(200).optional(),
+        fbc: z.string().max(300).optional(),
+        sourceUrl: z.string().max(500).regex(/^https?:\/\//, 'Invalid URL').optional(),
+    }).optional(),
 });
 
 const listSchema = z.object({
@@ -61,7 +75,7 @@ const labelsSchema = z.object({ orderIds: z.array(objectId).min(1).max(100) });
 
 // @route   POST /api/orders   (public)
 const createOrder = async (req, res) => {
-    const { product: productId, variant, customer } = createOrderSchema.parse(req.body);
+    const { product: productId, variant, customer, tracking } = createOrderSchema.parse(req.body);
     if (customer.deliveryType === 'home' && !customer.address) {
         throw new HttpError(400, 'Address is required for home delivery');
     }
@@ -77,7 +91,7 @@ const createOrder = async (req, res) => {
     }).lean();
     if (recent) {
         req.log.info({ event: 'order.duplicate_blocked', orderId: recent._id, phone: maskPhone(customer.phone) }, 'Duplicate order ignored');
-        return res.status(200).json(recent);
+        return res.status(200).json(toPublicOrder(recent));
     }
 
     const { wilayaCode, place, pricing } = await priceOrder({
@@ -94,6 +108,7 @@ const createOrder = async (req, res) => {
         variant,
         customer: { ...customerFields, ...(place && { wilaya: place.wilaya, commune: place.commune, zr: place.zr }), wilayaCode },
         pricing,
+        tracking: { ...tracking, ip: req.ip, userAgent: req.get('user-agent')?.slice(0, 400) },
     });
     req.log.info({
         event: 'order.created',
@@ -106,7 +121,11 @@ const createOrder = async (req, res) => {
         zrPrices: Boolean(place),
         total: pricing.totalPrice,
     }, 'Order created');
-    res.status(201).json(order);
+
+    // Lead for Meta, in the background: the customer never waits for Meta
+    metaEvents.sendOrderEvent(order._id, 'lead', req.log).catch((err) => req.log.error({ err }, 'Meta Lead failed'));
+
+    res.status(201).json(toPublicOrder(order));
 };
 
 // @route   GET /api/orders?status=&q=&page=&limit=   (admin)
@@ -122,6 +141,7 @@ const listOrders = async (req, res) => {
 
     const [orders, total, byStatus] = await Promise.all([
         Order.find(filter)
+            .select('-tracking')
             .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
             .limit(limit)
@@ -162,9 +182,13 @@ const updateOrderStatus = async (req, res) => {
         order._id,
         { status },
         { returnDocument: 'after', runValidators: true }
-    ).lean();
+    ).select('-tracking').lean();
 
     req.log.info({ event: 'order.status_changed', orderId: order._id, from: order.status, to: status, stock }, 'Order status changed');
+
+    // Purchase on confirmation, and the later events; in the background
+    metaEvents.onStatusChange(order, status, req.log);
+
     res.json(warning ? { ...updated, warning } : updated);
 };
 

@@ -2,6 +2,14 @@ const mongoose = require('mongoose');
 
 const ORDER_STATUSES = ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Returned', 'Cancelled'];
 
+// A Meta event that failed and waits to be sent again (see services/metaEvents.js)
+const metaRetrySchema = new mongoose.Schema({
+    kind: { type: String },
+    eventTime: { type: Date },
+    attempts: { type: Number, default: 1 },
+    lastError: { type: String }
+});
+
 const orderSchema = new mongoose.Schema({
     product: {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,6 +33,7 @@ const orderSchema = new mongoose.Schema({
             wilayaId: { type: String },
             communeId: { type: String },
             communeName: { type: String },
+            postalCode: { type: String },
             hubId: { type: String },
             hubName: { type: String }
         }
@@ -59,6 +68,24 @@ const orderSchema = new mongoose.Schema({
         sentAt: { type: Date },
         lastEventAt: { type: Date },
         sending: { type: Boolean }
+    },
+    // Browser details saved when the order is placed, reused for Meta events sent later.
+    // Erased about 30 days after the order is closed.
+    tracking: {
+        fbp: { type: String },
+        fbc: { type: String },
+        ip: { type: String },
+        userAgent: { type: String },
+        sourceUrl: { type: String }
+    },
+    // When each Meta Conversions API event was sent (each one only once), and failed ones to retry
+    metaEvents: {
+        lead: { type: Date },
+        purchase: { type: Date },
+        delivered: { type: Date },
+        returned: { type: Date },
+        cancelled: { type: Date },
+        retry: [metaRetrySchema]
     },
     createdAt: { type: Date, default: Date.now }
 });

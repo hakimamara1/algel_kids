@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createOrder, getDeliveryWilayas, getDeliveryWilaya } from '../lib/api';
+import { getMetaTracking } from '../lib/metaTracking';
 import { trackEvent } from '../utils/FacebookPixel';
 
 const INPUT_CLASS = 'w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-all';
@@ -207,7 +208,9 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
                 itemPrice: product.price,
                 shippingPrice,
                 totalPrice
-            }
+            },
+            // Meta cookies and page address: lets the server's Purchase match the ad click
+            tracking: getMetaTracking()
         };
 
         try {
@@ -215,16 +218,15 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
             // The server sets the real prices; fall back to ours if an old backend answers
             const pricing = savedOrder?.pricing || { itemPrice: product.price, shippingPrice, totalPrice };
 
-            // The order id doubles as the event id, so a future server-side
-            // Conversions API event for the same order is deduplicated by Meta
-            trackEvent('Purchase', {
+            // Lead for Meta. The Purchase is sent by the server when the order is confirmed by phone.
+            // Same event id as the server's Lead, so Meta counts it once.
+            trackEvent('Lead', {
                 currency: 'DZD',
-                value: pricing.totalPrice,
+                value: pricing.itemPrice,
                 content_name: product.title,
                 content_ids: [product._id],
-                content_type: 'product',
-                num_items: 1
-            }, savedOrder?._id);
+                content_type: 'product'
+            }, savedOrder?._id ? `lead_${savedOrder._id}` : undefined);
 
             navigate('/merci', {
                 state: {
@@ -437,6 +439,12 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
                     <span>{placeChosen ? `تأكيد الطلب · ${totalPrice} د.ج` : 'تأكيد الطلب'}</span>
                 )}
             </button>
+
+            {/* Privacy notice */}
+            <p className="text-xs text-gray-400 text-center leading-relaxed">
+                تُستعمل معلوماتك لتوصيل طلبك ولقياس فعالية إعلاناتنا، ويُرسل رقم هاتفك مُشفّراً.{' '}
+                <Link to="/confidentialite" className="underline hover:text-gray-600">سياسة الخصوصية</Link>
+            </p>
         </form>
     );
 });

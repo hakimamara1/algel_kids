@@ -59,6 +59,7 @@ const build = ({ territories = [], rates, hubs = [], workflows = [], fetchedAt }
         const commune = {
             id: territory.id,
             name: territory.name,
+            postalCode: territory.postalCode,
             wilayaId: wilaya.id,
             hasHome: (territory.delivery?.hasHomeDelivery ?? wilaya.hasHome) !== false,
             prices: { home: own.home ?? wilaya.prices.home, pickup: own.pickup ?? wilaya.prices.pickup },

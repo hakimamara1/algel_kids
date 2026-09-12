@@ -26,6 +26,14 @@ const env = {
         parcelWeight: Number(process.env.ZR_PARCEL_WEIGHT) || 0.5, // kg
         syncHours: Number(process.env.ZR_SYNC_HOURS) || 6,
     },
+    // Meta Conversions API. Without a token the server sends nothing (the browser Pixel still works).
+    meta: {
+        pixelId: process.env.META_PIXEL_ID || '1190930022111249',
+        token: process.env.META_CAPI_TOKEN,
+        apiVersion: process.env.META_API_VERSION || 'v25.0',
+        testEventCode: process.env.META_TEST_EVENT_CODE, // only while testing in Events Manager
+        siteUrl: (process.env.SITE_URL || 'https://algel-kids.vercel.app').replace(/\/+$/, ''),
+    },
     cloudinary: {
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,

@@ -22,6 +22,7 @@ if (missing.admin.length) {
 const mongoose = require('mongoose');
 const app = require('./app');
 const zrData = require('./services/zrData');
+const metaEvents = require('./services/metaEvents');
 
 mongoose.connection.on('disconnected', () => logger.warn('MongoDB disconnected'));
 mongoose.connection.on('reconnected', () => logger.info('MongoDB reconnected'));
@@ -38,6 +39,8 @@ const start = async () => {
 
     // ZR prices/places: load the saved copy, refresh now, then every few hours (never blocks startup)
     zrData.start().catch((err) => logger.error({ err }, 'ZR data could not start'));
+    // Meta: retry failed Conversions API events and erase old browser details, every 15 minutes
+    metaEvents.start();
 
     // Render sends SIGTERM on every deploy: finish in-flight requests, then close the DB
     const shutdown = (signal) => {

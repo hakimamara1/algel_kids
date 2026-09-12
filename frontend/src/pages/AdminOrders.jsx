@@ -12,6 +12,8 @@ const STATUS_STYLES = {
     Returned: 'bg-red-100 text-red-600',
 };
 
+const META_EVENT_LABELS = { lead: 'Lead', purchase: 'Purchase', delivered: 'Delivered', returned: 'Returned', cancelled: 'Cancelled' };
+
 // Connection problems worth showing above the orders
 const zrWarnings = (status) => {
     if (!status) return [];
@@ -25,6 +27,27 @@ const zrWarnings = (status) => {
             : `Your ZR API key expires in ${status.daysLeft} day(s): create a new one in the ZR portal.`);
     }
     return warnings;
+};
+
+const metaWarnings = (status) => {
+    if (!status) return [];
+    if (!status.configured) return ['Meta Conversions API is not connected: add META_CAPI_TOKEN on Render (Purchase is sent only by the server).'];
+    const warnings = [];
+    if (status.testMode) warnings.push('Meta test mode is on: delete META_TEST_EVENT_CODE on Render after testing, or events count only as tests.');
+    if (status.retrying) warnings.push(`${status.retrying} order(s) have Meta events waiting to be sent again.`);
+    return warnings;
+};
+
+// Which Meta events went out for this order
+const MetaBadges = ({ events }) => {
+    const sent = Object.keys(META_EVENT_LABELS).filter((kind) => events?.[kind]);
+    if (!sent.length && !events?.retry?.length) return null;
+    return (
+        <span className="block mt-1 text-[11px] text-gray-400" title="Events sent to Meta">
+            Meta: {sent.map((kind) => META_EVENT_LABELS[kind]).join(' · ')}
+            {events?.retry?.length ? ' · retrying' : ''}
+        </span>
+    );
 };
 
 const DeliveryCell = ({ order, zrConnected, busy, onAction, onCopy }) => {
@@ -82,6 +105,7 @@ const AdminOrders = () => {
     const [notice, setNotice] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null); // For detail view modal
     const [zrStatus, setZrStatus] = useState(null);
+    const [metaStatus, setMetaStatus] = useState(null);
     const [busyOrderId, setBusyOrderId] = useState(null);
     const [bulkBusy, setBulkBusy] = useState(false);
 
@@ -115,10 +139,14 @@ const AdminOrders = () => {
         };
     }, [filter, reloadKey, fetchPage]);
 
+    // Connections to ZR Express and Meta (shown as warnings when something needs attention)
     useEffect(() => {
         adminApi.get('/admin/zr-status')
             .then(({ data }) => setZrStatus(data))
             .catch(() => setZrStatus(null));
+        adminApi.get('/admin/meta-status')
+            .then(({ data }) => setMetaStatus(data))
+            .catch(() => setMetaStatus(null));
     }, [reloadKey]);
 
     const changeFilter = (next) => {
@@ -217,7 +245,7 @@ const AdminOrders = () => {
 
     const allCount = STATUSES.reduce((sum, status) => sum + (counts[status] || 0), 0);
     const zrConnected = Boolean(zrStatus?.configured);
-    const warnings = zrWarnings(zrStatus);
+    const warnings = [...zrWarnings(zrStatus), ...metaWarnings(metaStatus)];
 
     if (loading) return <div className="p-10 text-center">Loading orders...</div>;
 
@@ -347,6 +375,7 @@ const AdminOrders = () => {
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${STATUS_STYLES[order.status] || 'bg-gray-100 text-gray-600'}`}>
                                                 {order.status}
                                             </span>
+                                            <MetaBadges events={order.metaEvents} />
                                         </td>
                                         <td className="p-4">
                                             <DeliveryCell

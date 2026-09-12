@@ -7,6 +7,7 @@ const { HttpError } = require('../lib/httpError');
 const { loginLimiter } = require('../middleware/rateLimits');
 const requireAdmin = require('../middleware/requireAdmin');
 const zrData = require('../services/zrData');
+const metaEvents = require('../services/metaEvents');
 
 const router = express.Router();
 
@@ -37,6 +38,11 @@ router.get('/me', requireAdmin, (req, res) => {
 // @route   GET /api/admin/zr-status — connection, last refresh, key expiry
 router.get('/zr-status', requireAdmin, (req, res) => {
     res.json(zrData.status());
+});
+
+// @route   GET /api/admin/meta-status — Conversions API connected, test mode, events waiting for a retry
+router.get('/meta-status', requireAdmin, async (req, res) => {
+    res.json(await metaEvents.status());
 });
 
 module.exports = router;
