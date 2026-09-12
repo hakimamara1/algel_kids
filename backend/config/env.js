@@ -15,6 +15,17 @@ const env = {
     loginRateLimit: Number(process.env.LOGIN_RATE_LIMIT) || 5,
     orderRateLimit: Number(process.env.ORDER_RATE_LIMIT) || 10, // per phone number, per hour
     orderIpRateLimit: Number(process.env.ORDER_IP_RATE_LIMIT) || 100, // per connection, per hour
+    // ZR Express (api.zrexpress.app). Without key + tenant the shop keeps its fixed delivery prices.
+    zr: {
+        apiUrl: (process.env.ZR_API_URL || 'https://api.zrexpress.app/api/v1').replace(/\/+$/, ''),
+        apiKey: process.env.ZR_API_KEY,
+        tenantId: process.env.ZR_TENANT_ID,
+        keyExpires: process.env.ZR_KEY_EXPIRES, // "Valid until" date of the key, e.g. 2027-09-12
+        webhookSecret: process.env.ZR_WEBHOOK_SECRET, // whsec_... from `npm run zr:webhook`
+        readyStateId: process.env.ZR_READY_STATE_ID, // optional override if the workflow state isn't found
+        parcelWeight: Number(process.env.ZR_PARCEL_WEIGHT) || 0.5, // kg
+        syncHours: Number(process.env.ZR_SYNC_HOURS) || 6,
+    },
     cloudinary: {
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,

@@ -96,7 +96,7 @@ test('the orders list needs the admin token, is paginated and has counts', async
     assert.equal(res.body.pages, 2);
     assert.equal(res.body.orders.length, 1);
     assert.equal(res.body.orders[0].product.title, 'Jolie Blouse');
-    assert.deepEqual(res.body.counts, { Pending: 2, Confirmed: 0, Shipped: 0, Delivered: 0, Cancelled: 0 });
+    assert.deepEqual(res.body.counts, { Pending: 2, Confirmed: 0, Shipped: 0, Delivered: 0, Returned: 0, Cancelled: 0 });
 
     const byPhone = await request(app).get('/api/orders?q=0661').set(authHeader()).expect(200);
     assert.equal(byPhone.body.total, 1);
@@ -150,9 +150,9 @@ test('status updates are protected and validated', async () => {
     await setStatus('not-an-id', 'Confirmed').expect(400);
 });
 
-test('sending to delivery says it is not connected yet instead of faking a tracking number', async () => {
+test('without ZR keys, sending to delivery says it is not connected yet instead of faking a tracking number', async () => {
     const { body: order } = await placeOrder().expect(201);
-    const res = await request(app).post(`/api/orders/${order._id}/delivery`).set(authHeader()).expect(501);
-    assert.match(res.body.message, /ZR Express/);
+    const res = await request(app).post(`/api/orders/${order._id}/delivery`).set(authHeader()).expect(503);
+    assert.match(res.body.message, /ZR Express is not connected yet/);
     assert.equal((await Order.findById(order._id)).status, 'Pending');
 });

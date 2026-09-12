@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test": "node --test --test-concurrency=1 test/*.test.js"
+    "test": "node --test --test-concurrency=1 test/*.test.js",
+    "zr:check": "node scripts/zrCheck.js",
+    "zr:webhook": "node scripts/zrWebhook.js"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +25,7 @@
     "multer": "^2.0.2",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0",
+    "svix": "^2.5.0",
     "zod": "^4.6.2"
   },
   "devDependencies": {

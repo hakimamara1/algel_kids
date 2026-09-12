@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const ORDER_STATUSES = ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'];
+const ORDER_STATUSES = ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Returned', 'Cancelled'];
 
 const orderSchema = new mongoose.Schema({
     product: {
@@ -19,7 +19,15 @@ const orderSchema = new mongoose.Schema({
         commune: { type: String, required: true },
         address: { type: String }, // Optional if picking up from desk, but good to have
         deliveryType: { type: String, enum: ['home', 'desk'], default: 'home' },
-        wilayaCode: { type: String } // e.g. "16", set by the server; delivery companies need it
+        wilayaCode: { type: String }, // e.g. "16", set by the server; delivery companies need it
+        // Places chosen in the ZR Express lists (ids of ZR's wilaya, commune and office)
+        zr: {
+            wilayaId: { type: String },
+            communeId: { type: String },
+            communeName: { type: String },
+            hubId: { type: String },
+            hubName: { type: String }
+        }
     },
     pricing: {
         itemPrice: { type: Number, required: true },
@@ -34,12 +42,31 @@ const orderSchema = new mongoose.Schema({
     },
     // True while one unit of the ordered color/size is taken from stock (see services/stock.js)
     stockReserved: { type: Boolean, default: false },
+    // The parcel at ZR Express, kept up to date by ZR's webhooks (see services/zrParcels.js)
+    delivery: {
+        provider: { type: String },
+        parcelId: { type: String },
+        trackingNumber: { type: String },
+        state: {
+            id: { type: String },
+            name: { type: String },
+            color: { type: String }
+        },
+        situation: {
+            name: { type: String },
+            slug: { type: String }
+        },
+        sentAt: { type: Date },
+        lastEventAt: { type: Date },
+        sending: { type: Boolean }
+    },
     createdAt: { type: Date, default: Date.now }
 });
 
 orderSchema.index({ createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
 orderSchema.index({ 'customer.phone': 1, createdAt: -1 });
+orderSchema.index({ 'delivery.parcelId': 1 }, { sparse: true });
 
 const Order = mongoose.model('Order', orderSchema);
 Order.ORDER_STATUSES = ORDER_STATUSES;

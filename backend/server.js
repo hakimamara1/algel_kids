@@ -21,6 +21,7 @@ if (missing.admin.length) {
 
 const mongoose = require('mongoose');
 const app = require('./app');
+const zrData = require('./services/zrData');
 
 mongoose.connection.on('disconnected', () => logger.warn('MongoDB disconnected'));
 mongoose.connection.on('reconnected', () => logger.info('MongoDB reconnected'));
@@ -34,6 +35,9 @@ const start = async () => {
     const server = app.listen(env.port, () => {
         logger.info({ port: env.port, env: env.nodeEnv }, 'Server listening');
     });
+
+    // ZR prices/places: load the saved copy, refresh now, then every few hours (never blocks startup)
+    zrData.start().catch((err) => logger.error({ err }, 'ZR data could not start'));
 
     // Render sends SIGTERM on every deploy: finish in-flight requests, then close the DB
     const shutdown = (signal) => {

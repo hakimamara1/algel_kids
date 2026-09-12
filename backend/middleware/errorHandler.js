@@ -10,6 +10,7 @@ const notFound = (req, res, next) => {
 // Turns known errors into a status + a message that is safe to send back
 const toHttpError = (err) => {
     if (err instanceof HttpError) return err;
+    if (err?.name === 'ZrError') return new HttpError(err.status, `ZR Express: ${err.message}`, err.details);
     if (err?.name === 'ZodError') {
         const details = err.issues.map((issue) => ({ field: issue.path.join('.'), message: issue.message }));
         return new HttpError(400, 'Invalid data', details);

@@ -6,6 +6,7 @@ const { env } = require('../config/env');
 const { HttpError } = require('../lib/httpError');
 const { loginLimiter } = require('../middleware/rateLimits');
 const requireAdmin = require('../middleware/requireAdmin');
+const zrData = require('../services/zrData');
 
 const router = express.Router();
 
@@ -31,6 +32,11 @@ router.post('/login', loginLimiter, (req, res) => {
 // @route   GET /api/admin/me
 router.get('/me', requireAdmin, (req, res) => {
     res.json({ role: req.admin.role });
+});
+
+// @route   GET /api/admin/zr-status — connection, last refresh, key expiry
+router.get('/zr-status', requireAdmin, (req, res) => {
+    res.json(zrData.status());
 });
 
 module.exports = router;

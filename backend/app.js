@@ -12,6 +12,8 @@ const adminRoutes = require('./routes/adminRoutes');
 const productRoutes = require('./routes/productRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const deliveryRoutes = require('./routes/deliveryRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');
 
 // Preview deployments of this Vercel project (other teams' previews don't match)
 const VERCEL_PREVIEW = /^https:\/\/algel-kids-[a-z0-9-]+-hakimamara20242023-6761s-projects\.vercel\.app$/;
@@ -54,6 +56,10 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({
     origin: (origin, callback) => callback(null, !origin || env.allowedOrigins.includes(origin) || VERCEL_PREVIEW.test(origin)),
 }));
+
+// Webhooks read their raw body to check the signature, so they come before the JSON parser
+app.use('/api/webhooks', webhookRoutes);
+
 app.use(express.json({ limit: '100kb' }));
 
 app.get('/', (req, res) => {
@@ -74,6 +80,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/delivery', deliveryRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

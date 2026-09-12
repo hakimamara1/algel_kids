@@ -51,6 +51,7 @@ const ThankYou = () => {
                         <h2 className="font-bold text-gray-900 mb-1">ملخص الطلب</h2>
                         <Row label="المنتج" value={[order.productTitle, order.color, order.size].filter(Boolean).join(' · ')} />
                         <Row label="التوصيل" value={`${order.wilaya} · ${order.commune} (${order.deliveryType === 'home' ? 'للمنزل' : 'للمكتب'})`} />
+                        {order.office && <Row label="المكتب" value={order.office} />}
                         <Row label="سعر التوصيل" value={`${order.shippingPrice} د.ج`} />
                         <div className="flex justify-between pt-2 border-t border-gray-100 text-base font-bold text-gray-900">
                             <span>الإجمالي</span>

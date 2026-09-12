@@ -32,6 +32,13 @@ export const getProduct = (id) => {
 
 export const getProducts = () => withFallback('/api/products', `${BACKEND_URL}/api/products`);
 
+// ZR Express places and real delivery prices (both fail with 503 until ZR is connected)
+export const getDeliveryWilayas = () =>
+    withFallback('/api/delivery', `${BACKEND_URL}/api/delivery/wilayas`);
+
+export const getDeliveryWilaya = (wilayaId) =>
+    withFallback(`/api/delivery?wilaya=${encodeURIComponent(wilayaId)}`, `${BACKEND_URL}/api/delivery/wilayas/${wilayaId}`);
+
 export const createOrder = (order) =>
     getJson(`${BACKEND_URL}/api/orders`, {
         method: 'POST',

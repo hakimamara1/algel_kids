@@ -4,11 +4,14 @@ const { HttpError } = require('../lib/httpError');
 const { maskPhone } = require('../lib/privacy');
 const { priceOrder } = require('../services/orderPricing');
 const { reserveStock, releaseStock } = require('../services/stock');
+const zr = require('../services/zrExpress');
+const { sendOrder, cancelParcel, refreshOrder } = require('../services/zrParcels');
 
 const { ORDER_STATUSES } = Order;
 const DUPLICATE_WINDOW_MS = 10 * 60 * 1000;
 const RESERVING_STATUSES = ['Confirmed', 'Shipped', 'Delivered'];
-const RELEASING_STATUSES = ['Cancelled'];
+const RELEASING_STATUSES = ['Cancelled', 'Returned'];
+const BULK_LIMIT = 50;
 
 // "0661 23 45 67" or "+213 661 23 45 67" -> "0661234567"
 const normalizePhone = (value) => {
@@ -18,9 +21,13 @@ const normalizePhone = (value) => {
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+const objectId = z.string().regex(/^[a-f0-9]{24}$/i, 'Invalid id');
+// ZR ids are GUIDs
+const guid = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, 'Invalid id');
+
 // Color and size are compared exactly as stored, so they are not trimmed
 const createOrderSchema = z.object({
-    product: z.string().regex(/^[a-f0-9]{24}$/i, 'Invalid product'),
+    product: objectId,
     variant: z.object({
         color: z.string().max(60).optional(),
         size: z.string().max(30).optional(),
@@ -32,6 +39,12 @@ const createOrderSchema = z.object({
         commune: z.string().trim().min(1).max(80),
         address: z.string().trim().max(300).default(''),
         deliveryType: z.enum(['home', 'desk']).default('home'),
+        // Sent by the order form when it uses ZR's lists
+        zr: z.object({
+            wilayaId: guid,
+            communeId: guid,
+            hubId: guid.optional(),
+        }).optional(),
     }),
 });
 
@@ -43,6 +56,8 @@ const listSchema = z.object({
 });
 
 const statusSchema = z.object({ status: z.enum(ORDER_STATUSES) });
+const bulkSchema = z.object({ orderIds: z.array(objectId).max(BULK_LIMIT).optional() });
+const labelsSchema = z.object({ orderIds: z.array(objectId).min(1).max(100) });
 
 // @route   POST /api/orders   (public)
 const createOrder = async (req, res) => {
@@ -65,15 +80,21 @@ const createOrder = async (req, res) => {
         return res.status(200).json(recent);
     }
 
-    const { wilayaCode, pricing } = await priceOrder({
+    const { wilayaCode, place, pricing } = await priceOrder({
         productId,
         color: variant.color,
         size: variant.size,
-        wilaya: customer.wilaya,
-        deliveryType: customer.deliveryType,
+        customer,
     });
 
-    const order = await Order.create({ product: productId, variant, customer: { ...customer, wilayaCode }, pricing });
+    // With ZR places, the server's names replace what the browser sent
+    const { zr: _zrInput, ...customerFields } = customer;
+    const order = await Order.create({
+        product: productId,
+        variant,
+        customer: { ...customerFields, ...(place && { wilaya: place.wilaya, commune: place.commune, zr: place.zr }), wilayaCode },
+        pricing,
+    });
     req.log.info({
         event: 'order.created',
         orderId: order._id,
@@ -82,6 +103,7 @@ const createOrder = async (req, res) => {
         size: variant.size,
         wilayaCode,
         deliveryType: customer.deliveryType,
+        zrPrices: Boolean(place),
         total: pricing.totalPrice,
     }, 'Order created');
     res.status(201).json(order);
@@ -95,7 +117,7 @@ const listOrders = async (req, res) => {
     if (status) filter.status = status;
     if (q) {
         const pattern = new RegExp(escapeRegex(q), 'i');
-        filter.$or = [{ 'customer.name': pattern }, { 'customer.phone': pattern }];
+        filter.$or = [{ 'customer.name': pattern }, { 'customer.phone': pattern }, { 'delivery.trackingNumber': pattern }];
     }
 
     const [orders, total, byStatus] = await Promise.all([
@@ -132,6 +154,9 @@ const updateOrderStatus = async (req, res) => {
     } else if (RELEASING_STATUSES.includes(status)) {
         stock = (await releaseStock(order)) ? 'restored' : 'none';
     }
+    if (status === 'Cancelled' && order.delivery?.parcelId) {
+        warning = 'This order still has a ZR parcel: use "Cancel parcel" so ZR does not deliver it.';
+    }
 
     const updated = await Order.findByIdAndUpdate(
         order._id,
@@ -143,10 +168,64 @@ const updateOrderStatus = async (req, res) => {
     res.json(warning ? { ...updated, warning } : updated);
 };
 
-// @route   POST /api/orders/:id/delivery   (admin)
-// The old version faked a tracking number. ZR Express comes in the dashboard plan.
-const sendToDelivery = () => {
-    throw new HttpError(501, 'Delivery provider is not connected yet. Create this parcel in your ZR Express account.');
+// @route   POST /api/orders/:id/delivery   (admin) — create the ZR parcel
+const sendToDelivery = async (req, res) => {
+    if (!zr.isConfigured()) throw new HttpError(503, 'ZR Express is not connected yet (ZR_API_KEY / ZR_TENANT_ID on Render).');
+    res.json(await sendOrder(objectId.parse(req.params.id), req.log));
 };
 
-module.exports = { createOrder, listOrders, updateOrderStatus, sendToDelivery };
+// @route   POST /api/orders/delivery/bulk   (admin) — send confirmed orders, oldest first
+const sendConfirmedToDelivery = async (req, res) => {
+    if (!zr.isConfigured()) throw new HttpError(503, 'ZR Express is not connected yet (ZR_API_KEY / ZR_TENANT_ID on Render).');
+    const { orderIds } = bulkSchema.parse(req.body ?? {});
+    const filter = orderIds?.length
+        ? { _id: { $in: orderIds } }
+        : { status: 'Confirmed', 'delivery.parcelId': { $exists: false }, 'customer.zr.communeId': { $exists: true } };
+    const orders = await Order.find(filter).select('_id').sort({ createdAt: 1 }).limit(BULK_LIMIT).lean();
+
+    const sent = [];
+    const failed = [];
+    for (const { _id } of orders) {
+        try {
+            const order = await sendOrder(_id, req.log);
+            sent.push({ orderId: _id, trackingNumber: order.delivery?.trackingNumber || null });
+        } catch (err) {
+            failed.push({ orderId: _id, message: err.message });
+        }
+    }
+    req.log.info({ event: 'zr.bulk_send', sent: sent.length, failed: failed.length }, 'Bulk send to ZR Express');
+    res.json({ sent, failed });
+};
+
+// @route   DELETE /api/orders/:id/delivery   (admin) — cancel the ZR parcel before pickup
+const cancelDelivery = async (req, res) => {
+    res.json(await cancelParcel(objectId.parse(req.params.id), req.log));
+};
+
+// @route   POST /api/orders/:id/delivery/refresh   (admin)
+const refreshDelivery = async (req, res) => {
+    res.json(await refreshOrder(objectId.parse(req.params.id), req.log));
+};
+
+// @route   POST /api/orders/delivery/labels   (admin) — one printable page
+const printLabels = async (req, res) => {
+    const { orderIds } = labelsSchema.parse(req.body);
+    const orders = await Order.find({ _id: { $in: orderIds }, 'delivery.trackingNumber': { $exists: true } })
+        .select('delivery.trackingNumber')
+        .lean();
+    if (!orders.length) throw new HttpError(400, 'None of these orders has a tracking number yet');
+
+    const result = await zr.generateLabels(orders.map((order) => order.delivery.trackingNumber));
+    res.json({ fileUrl: result?.fileUrl, failed: result?.failedTrackingNumbers || [] });
+};
+
+module.exports = {
+    createOrder,
+    listOrders,
+    updateOrderStatus,
+    sendToDelivery,
+    sendConfirmedToDelivery,
+    cancelDelivery,
+    refreshDelivery,
+    printLabels,
+};
