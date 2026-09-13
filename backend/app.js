@@ -14,11 +14,13 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const deliveryRoutes = require('./routes/deliveryRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
+const funnelRoutes = require('./routes/funnelRoutes');
 
 // Preview deployments of this Vercel project (other teams' previews don't match)
 const VERCEL_PREVIEW = /^https:\/\/algel-kids-[a-z0-9-]+-hakimamara20242023-6761s-projects\.vercel\.app$/;
 const SLOW_REQUEST_MS = 1000;
-const QUIET_PATHS = new Set(['/', '/health']);
+// No request line for these: health checks, and the form-step beacons (they log their own line)
+const QUIET_PATHS = new Set(['/', '/health', '/api/funnel']);
 
 const app = express();
 
@@ -81,6 +83,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/delivery', deliveryRoutes);
+app.use('/api/funnel', funnelRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

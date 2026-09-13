@@ -2,7 +2,7 @@ const { z } = require('zod');
 const Order = require('../models/orderModel');
 const { HttpError } = require('../lib/httpError');
 const { maskPhone } = require('../lib/privacy');
-const { priceOrder } = require('../services/orderPricing');
+const { priceOrder, checkVariantChange } = require('../services/orderPricing');
 const { reserveStock, releaseStock } = require('../services/stock');
 const zr = require('../services/zrExpress');
 const metaEvents = require('../services/metaEvents');
@@ -243,9 +243,64 @@ const printLabels = async (req, res) => {
     res.json({ fileUrl: result?.fileUrl, failed: result?.failedTrackingNumbers || [] });
 };
 
+const editSchema = z.object({
+    color: z.string().max(60).optional(),
+    size: z.string().max(30).optional(),
+    address: z.string().trim().max(300).optional(),
+}).refine((body) => Object.values(body).some((value) => value !== undefined), 'Nothing to change');
+
+// @route   PATCH /api/orders/:id   (admin) — after the confirmation call: fix the color/size or the address
+const updateOrder = async (req, res) => {
+    const id = objectId.parse(req.params.id);
+    const changes = editSchema.parse(req.body ?? {});
+    const order = await Order.findById(id).select('-tracking').lean();
+    if (!order) throw new HttpError(404, 'Order not found');
+
+    const filter = { _id: id };
+    const set = {};
+    let warning;
+
+    const color = changes.color ?? order.variant?.color;
+    const size = changes.size ?? order.variant?.size;
+    if (color !== order.variant?.color || size !== order.variant?.size) {
+        // Stock is taken at confirmation, so the color and size can only change before it
+        if (order.status !== 'Pending') throw new HttpError(409, 'The color and size can only be changed while the order is Pending');
+        warning = await checkVariantChange(order.product, color, size);
+        set['variant.color'] = color;
+        if (size !== undefined) set['variant.size'] = size;
+        filter.status = 'Pending';
+    }
+
+    if (changes.address !== undefined && changes.address !== (order.customer.address || '')) {
+        if (order.delivery?.parcelId) throw new HttpError(409, 'This order is already at ZR Express: change the address in the ZR portal');
+        if (!changes.address && order.customer.deliveryType !== 'desk') throw new HttpError(400, 'Home delivery needs an address');
+        set['customer.address'] = changes.address;
+        filter['delivery.parcelId'] = { $exists: false };
+    }
+
+    if (!Object.keys(set).length) return res.json(order);
+
+    // Only applied if nothing changed in the meantime (a confirmation, a parcel sent)
+    const updated = await Order.findOneAndUpdate(filter, { $set: set }, { returnDocument: 'after', runValidators: true })
+        .select('-tracking')
+        .lean();
+    if (!updated) throw new HttpError(409, 'This order changed in the meantime: reload and try again');
+
+    // Field names only: the address itself stays out of the logs
+    req.log.info({
+        event: 'order.edited',
+        orderId: id,
+        fields: Object.keys(set),
+        color: updated.variant?.color,
+        size: updated.variant?.size,
+    }, 'Order edited');
+    res.json(warning ? { ...updated, warning } : updated);
+};
+
 module.exports = {
     createOrder,
     listOrders,
+    updateOrder,
     updateOrderStatus,
     sendToDelivery,
     sendConfirmedToDelivery,

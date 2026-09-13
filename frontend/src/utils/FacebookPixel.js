@@ -13,3 +13,8 @@ export const trackEvent = (event, data, eventId) => {
     if (eventId) fbq('track', event, data, { eventID: String(eventId) });
     else fbq('track', event, data);
 };
+
+// Shop-specific events (for example the order-form steps), shown under their own name in Events Manager
+export const trackCustomEvent = (event, data) => {
+    fbq('trackCustom', event, data);
+};

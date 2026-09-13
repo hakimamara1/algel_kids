@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import adminApi, { apiErrorMessage } from '../lib/adminApi';
+import OrderEditor from '../components/admin/OrderEditor';
 
 const PAGE_SIZE = 30;
 const STATUSES = ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Returned', 'Cancelled'];
@@ -358,6 +359,9 @@ const AdminOrders = () => {
                                                     <span className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-600">
                                                         {order.variant?.color} / {order.variant?.size}
                                                     </span>
+                                                    {order.status === 'Pending' && (
+                                                        <span className="block mt-1 text-[11px] font-semibold text-amber-600">Check size on the call</span>
+                                                    )}
                                                 </div>
                                             </div>
                                         </td>
@@ -433,7 +437,7 @@ const AdminOrders = () => {
             {/* Order Detail Modal */}
             {selectedOrder && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+                    <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
                         <button
                             onClick={() => setSelectedOrder(null)}
                             className="absolute top-4 right-4 p-2 bg-gray-100 rounded-full hover:bg-gray-200"
@@ -474,6 +478,15 @@ const AdminOrders = () => {
                                     {selectedOrder.delivery.sentAt && <p><span className="text-blue-700">Sent:</span> {new Date(selectedOrder.delivery.sentAt).toLocaleString()}</p>}
                                 </div>
                             )}
+
+                            <OrderEditor
+                                key={selectedOrder._id}
+                                order={selectedOrder}
+                                onSaved={(updated) => {
+                                    setSelectedOrder((prev) => (prev?._id === updated._id ? { ...prev, variant: updated.variant, customer: updated.customer } : prev));
+                                    setReloadKey((key) => key + 1);
+                                }}
+                            />
                         </div>
                     </div>
                 </div>

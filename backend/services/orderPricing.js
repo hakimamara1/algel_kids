@@ -3,6 +3,29 @@ const zrData = require('./zrData');
 const { HttpError } = require('../lib/httpError');
 const { findWilaya, getShippingRate } = require('../data/algeria');
 
+// Checks the color and size exist on the product.
+// Returns the size entry (with its stock) when the color has sizes, otherwise null.
+const findVariant = (product, color, size) => {
+    if (!product.colors?.length) return null;
+
+    const colorEntry = product.colors.find((entry) => entry.name === color);
+    if (!colorEntry) throw new HttpError(400, 'Please choose an available color');
+    if (!colorEntry.sizes?.length) return null;
+
+    const sizeEntry = colorEntry.sizes.find((entry) => entry.value === size);
+    if (!sizeEntry) throw new HttpError(400, 'Please choose an available size');
+    return sizeEntry;
+};
+
+// The admin changing an order's color/size: it must exist; no stock left is only a warning
+// (as when confirming), since the shop may have the piece anyway
+const checkVariantChange = async (productId, color, size) => {
+    const product = await Product.findById(productId).select('colors.name colors.sizes').lean();
+    if (!product) throw new HttpError(404, 'Product not found');
+    const sizeEntry = findVariant(product, color, size);
+    return sizeEntry && sizeEntry.stock <= 0 ? `Size ${size} (${color}) has no stock left.` : undefined;
+};
+
 // Works out the real price of an order from the database.
 // Prices sent by the browser are never trusted.
 // With ZR places (wilaya/commune/office ids) the delivery price is ZR's; otherwise the fixed table.
@@ -10,16 +33,8 @@ const priceOrder = async ({ productId, color, size, customer }) => {
     const product = await Product.findById(productId).select('price colors.name colors.sizes').lean();
     if (!product) throw new HttpError(404, 'Product not found');
 
-    if (product.colors?.length) {
-        const colorEntry = product.colors.find((entry) => entry.name === color);
-        if (!colorEntry) throw new HttpError(400, 'Please choose an available color');
-
-        if (colorEntry.sizes?.length) {
-            const sizeEntry = colorEntry.sizes.find((entry) => entry.value === size);
-            if (!sizeEntry) throw new HttpError(400, 'Please choose an available size');
-            if (sizeEntry.stock <= 0) throw new HttpError(409, 'This size is sold out');
-        }
-    }
+    const sizeEntry = findVariant(product, color, size);
+    if (sizeEntry && sizeEntry.stock <= 0) throw new HttpError(409, 'This size is sold out');
 
     const withPrices = (shippingPrice) => ({
         itemPrice: product.price,
@@ -63,4 +78,4 @@ const priceOrder = async ({ productId, color, size, customer }) => {
     };
 };
 
-module.exports = { priceOrder };
+module.exports = { priceOrder, checkVariantChange };

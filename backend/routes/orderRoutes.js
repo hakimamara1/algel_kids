@@ -4,6 +4,7 @@ const { orderIpLimiter, orderPhoneLimiter } = require('../middleware/rateLimits'
 const {
     createOrder,
     listOrders,
+    updateOrder,
     updateOrderStatus,
     sendToDelivery,
     sendConfirmedToDelivery,
@@ -27,5 +28,7 @@ router.route('/:id/delivery')
 router.post('/:id/delivery/refresh', requireAdmin, refreshDelivery);
 
 router.put('/:id/status', requireAdmin, updateOrderStatus);
+// After the confirmation call: color/size or address
+router.patch('/:id', requireAdmin, updateOrder);
 
 module.exports = router;

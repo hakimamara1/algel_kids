@@ -2,6 +2,7 @@ import React, { useState, useEffect, lazy, Suspense, useCallback, useRef } from 
 import { Link, useParams } from 'react-router-dom';
 import ImageCarousel from '../components/ImageCarousel';
 import { getProduct } from '../lib/api';
+import { defaultColor, pickSize } from '../lib/variants';
 import { trackEvent } from '../utils/FacebookPixel';
 
 import ProductHeader from '../components/product/ProductHeader';
@@ -30,6 +31,7 @@ const ProductDetails = () => {
     const [barVisible, setBarVisible] = useState(false);
     const addToCartSent = useRef(false);
     const priceRef = useRef(null);
+    const variantsRef = useRef(null);
     const sizeRef = useRef(null);
     const checkoutRef = useRef(null);
 
@@ -40,9 +42,11 @@ const ProductDetails = () => {
         getProduct(id)
             .then((data) => {
                 if (cancelled) return;
+                const color = defaultColor(data.colors);
                 setProduct(data);
-                setSelectedColor(data.colors?.[0] ?? null);
-                setSelectedSize(null);
+                setSelectedColor(color);
+                // A size is already chosen, so the customer can't forget it (the shop checks it on the call)
+                setSelectedSize(pickSize(color));
                 setStatus('ready');
 
                 trackEvent('ViewContent', {
@@ -82,31 +86,41 @@ const ProductDetails = () => {
         return () => observer.disconnect();
     }, [status]);
 
+    // The customer choosing a color or size herself is the "add to cart" moment
+    const sendAddToCart = useCallback(() => {
+        if (!product || addToCartSent.current) return;
+        addToCartSent.current = true;
+        trackEvent('AddToCart', {
+            content_ids: [product._id],
+            content_name: product.title,
+            content_type: 'product',
+            currency: 'DZD',
+            value: product.price
+        });
+    }, [product]);
+
     const handleColorChange = useCallback((color) => {
         setSelectedColor(color);
-        setSelectedSize(null);
-    }, []);
+        // Keep her size when this color has it in stock, otherwise the closest one
+        setSelectedSize((current) => pickSize(color, current?.value));
+        setSizeMissing(false);
+        sendAddToCart();
+    }, [sendAddToCart]);
 
     const handleSizeChange = useCallback((size) => {
         setSelectedSize(size);
         setSizeMissing(false);
-
-        // Color + size chosen is the "add to cart" moment on a one-page order form
-        if (product && !addToCartSent.current) {
-            addToCartSent.current = true;
-            trackEvent('AddToCart', {
-                content_ids: [product._id],
-                content_name: product.title,
-                content_type: 'product',
-                currency: 'DZD',
-                value: product.price
-            });
-        }
-    }, [product]);
+        sendAddToCart();
+    }, [sendAddToCart]);
 
     const handleSizeMissing = useCallback(() => {
         setSizeMissing(true);
         scrollGently(sizeRef.current, 'center');
+    }, []);
+
+    // "تغيير" in the order form: back up to the color and size choices
+    const handleChangeVariant = useCallback(() => {
+        scrollGently(variantsRef.current, 'center');
     }, []);
 
     const handleOrderClick = () => {
@@ -192,15 +206,17 @@ const ProductDetails = () => {
 
                 <ProductTrust />
 
-                <ProductVariants
-                    colors={product.colors}
-                    selectedColor={selectedColor}
-                    onColorChange={handleColorChange}
-                    selectedSize={selectedSize}
-                    onSizeChange={handleSizeChange}
-                    sizeRef={sizeRef}
-                    sizeMissing={sizeMissing}
-                />
+                <div ref={variantsRef}>
+                    <ProductVariants
+                        colors={product.colors}
+                        selectedColor={selectedColor}
+                        onColorChange={handleColorChange}
+                        selectedSize={selectedSize}
+                        onSizeChange={handleSizeChange}
+                        sizeRef={sizeRef}
+                        sizeMissing={sizeMissing}
+                    />
+                </div>
 
                 <ProductDescription description={product.description} />
             </div>
@@ -212,6 +228,7 @@ const ProductDetails = () => {
                         product={product}
                         variant={{ color: selectedColor, size: selectedSize }}
                         onSizeMissing={handleSizeMissing}
+                        onChangeVariant={handleChangeVariant}
                     />
                 </Suspense>
             </div>

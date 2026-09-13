@@ -2,11 +2,22 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { createOrder, getDeliveryWilayas, getDeliveryWilaya } from '../lib/api';
 import { getMetaTracking } from '../lib/metaTracking';
+import { trackCheckoutStep } from '../lib/funnel';
 import { trackEvent } from '../utils/FacebookPixel';
 
 const INPUT_CLASS = 'w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-all';
 const LABEL_CLASS = 'block text-sm font-medium text-gray-700 mb-1';
 const PHONE_PATTERN = /^(05|06|07)[0-9]{8}$/;
+
+// Empty required fields are stopped by the browser itself: which funnel reason each one is
+const FIELD_REASONS = {
+    'checkout-name': 'name',
+    'checkout-phone': 'phone',
+    'checkout-wilaya': 'place',
+    'checkout-commune': 'place',
+    'checkout-office': 'office',
+    'checkout-address': 'address',
+};
 
 // If ZR Express lists can't load, the form falls back to the built-in list and fixed prices.
 // That list is its own small file, downloaded only in that case.
@@ -14,7 +25,23 @@ const loadBuiltInPlaces = () => import('../data/algeriaData');
 
 const priceLabel = (price) => (price == null ? 'غير متوفر' : `${price} د.ج`);
 
-const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
+// Arabic keyboards type ٠١٢…: turn them into 012… before keeping digits only
+const toLatinDigits = (text) => text
+    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 0x06F0));
+
+// "0661 23 45 67", "٠٦٦١٢٣٤٥٦٧", "+213 661 23 45 67" -> "0661234567"
+const cleanPhone = (raw) => {
+    let digits = toLatinDigits(raw).replace(/\D/g, '');
+    if (digits.startsWith('00213')) digits = digits.slice(2);
+    if (digits.startsWith('213')) {
+        // Still typing after the country code: keep it until the number is complete
+        return digits.length >= 12 ? `0${digits.slice(3, 12)}` : digits;
+    }
+    return digits.slice(0, 10);
+};
+
+const CheckoutForm = React.memo(({ product, variant, onSizeMissing, onChangeVariant }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
@@ -34,6 +61,7 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const checkoutStarted = useRef(false);
     const requestedWilaya = useRef('');
+    const stepsSent = useRef({});
 
     const switchToBuiltInPlaces = useCallback(() => {
         loadBuiltInPlaces().then((module) => {
@@ -74,6 +102,25 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
         });
     }, [product._id, product.title, product.price]);
 
+    // Where customers stop in the form: each step counted once per visit, each error reason once
+    const reportStep = useCallback((step, details = {}) => {
+        const key = step === 'error' ? `error:${details.reason}` : step;
+        if (stepsSent.current[key]) return;
+        stepsSent.current[key] = true;
+        trackCheckoutStep(step, { productId: product._id, ...details });
+    }, [product._id]);
+
+    const fail = (reason, message) => {
+        setErrorMessage(message);
+        reportStep('error', { reason });
+    };
+
+    // React's onInvalid bubbles up to the form, so one handler sees every field the browser stops
+    const handleInvalid = (e) => {
+        const reason = FIELD_REASONS[e.target.id];
+        if (reason) reportStep('error', { reason });
+    };
+
     const updateField = (field) => (e) => setFormData(prev => ({ ...prev, [field]: e.target.value }));
 
     const handleWilayaChange = (e) => {
@@ -83,6 +130,8 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
             setWilayaDetails(null);
             requestedWilaya.current = value;
             if (!value) return;
+            const chosen = zrWilayas.find(w => w.id === value);
+            if (chosen) reportStep('wilaya', { wilaya: chosen.code, shipping: chosen.home ?? undefined });
             getDeliveryWilaya(value)
                 .then((details) => {
                     if (requestedWilaya.current === value) setWilayaDetails(details);
@@ -93,13 +142,12 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
         // Built-in list: picking a wilaya also picks its first commune
         const wilaya = builtIn?.wilayas.find(w => w.name === value);
         setFormData(prev => ({ ...prev, wilaya: value, commune: wilaya?.communes[0] || '' }));
+        if (wilaya) reportStep('wilaya', { wilaya: Number(wilaya.code), shipping: builtIn.getShippingRate(wilaya.code).home });
     };
 
     const handlePhoneChange = useCallback((e) => {
-        const val = e.target.value.replace(/\D/g, ''); // Only numbers
-        if (val.length <= 10) {
-            setFormData(prev => ({ ...prev, phone: val }));
-        }
+        const phone = cleanPhone(e.target.value);
+        setFormData(prev => ({ ...prev, phone }));
     }, []);
 
     // --- Delivery options and price for the chosen place ---
@@ -138,36 +186,37 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        reportStep('submit');
 
         // The server refuses orders without a size, so ask for it here first
         if (variant?.color?.sizes?.length && !variant?.size) {
-            setErrorMessage('يرجى اختيار المقاس أولاً');
+            fail('size', 'يرجى اختيار المقاس أولاً');
             onSizeMissing?.();
             return;
         }
 
         if (!PHONE_PATTERN.test(formData.phone)) {
-            setErrorMessage('يرجى إدخال رقم هاتف صحيح (05، 06، أو 07)');
+            fail('phone', 'يرجى إدخال رقم هاتف صحيح (05، 06، أو 07)');
             return;
         }
 
         if (mode === 'zr' && (!zrWilaya || !zrCommune)) {
-            setErrorMessage('يرجى اختيار الولاية والبلدية');
+            fail('place', 'يرجى اختيار الولاية والبلدية');
             return;
         }
 
         if ((deliveryType === 'home' ? homePrice : deskPrice) == null) {
-            setErrorMessage('التوصيل غير متوفر لهذه البلدية. يرجى الاتصال بنا على 0662241056.');
+            fail('unavailable', 'التوصيل غير متوفر لهذه البلدية. يرجى الاتصال بنا على 0662241056.');
             return;
         }
 
         if (deliveryType === 'home' && !formData.address) {
-            setErrorMessage('العنوان مطلوب للتوصيل للمنزل');
+            fail('address', 'العنوان مطلوب للتوصيل للمنزل');
             return;
         }
 
         if (mode === 'zr' && deliveryType === 'desk' && !selectedOffice) {
-            setErrorMessage('يرجى اختيار مكتب ZR الذي تريد الاستلام منه');
+            fail('office', 'يرجى اختيار مكتب ZR الذي تريد الاستلام منه');
             return;
         }
 
@@ -251,11 +300,11 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
             console.error(err);
             setSubmitting(false);
             if (err.status === 409) {
-                setErrorMessage('عذراً، هذا المقاس نفد. يرجى اختيار مقاس آخر.');
+                fail('sold_out', 'عذراً، هذا المقاس نفد. يرجى اختيار مقاس آخر.');
             } else if (err.status === 429) {
-                setErrorMessage('تم إرسال طلبات كثيرة. يرجى الاتصال بنا على 0662241056.');
+                fail('rate_limit', 'تم إرسال طلبات كثيرة. يرجى الاتصال بنا على 0662241056.');
             } else {
-                setErrorMessage('حدث خطأ ما. يرجى المحاولة مرة أخرى.');
+                fail('server', 'حدث خطأ ما. يرجى المحاولة مرة أخرى.');
             }
         }
     };
@@ -265,7 +314,7 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
     const communesLoading = mode === 'zr' && Boolean(formData.wilaya) && !wilayaDetails;
 
     return (
-        <form onSubmit={handleSubmit} onFocus={handleFormFocus} className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-5">
+        <form onSubmit={handleSubmit} onFocus={handleFormFocus} onInvalid={handleInvalid} className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-5">
             <h2 className="text-xl font-bold text-gray-900">شراء سريع</h2>
 
             {/* Name */}
@@ -406,9 +455,19 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
             {/* Summary */}
             <div className="bg-pink-50 p-4 rounded-xl space-y-2">
                 <div className="flex justify-between gap-3 text-sm text-gray-600">
-                    <span className="truncate">{product.title}{chosenVariant && ` · ${chosenVariant}`}</span>
+                    <span className="truncate">{product.title}</span>
                     <span className="whitespace-nowrap">{product.price} د.ج</span>
                 </div>
+                {chosenVariant && (
+                    <div className="flex justify-between items-center gap-3 text-sm text-gray-600">
+                        <span className="min-w-0 truncate">اللون · المقاس: <b className="text-gray-900">{chosenVariant}</b></span>
+                        {onChangeVariant && (
+                            <button type="button" onClick={onChangeVariant} className="shrink-0 text-pink-600 font-semibold underline underline-offset-2">
+                                تغيير
+                            </button>
+                        )}
+                    </div>
+                )}
                 <div className="flex justify-between text-sm text-gray-600">
                     <span>التوصيل{mode === 'zr' ? ' (ZR Express)' : ''}</span>
                     <span>{placeChosen ? `${shippingPrice} د.ج` : 'اختر الولاية'}</span>
@@ -427,9 +486,10 @@ const CheckoutForm = React.memo(({ product, variant, onSizeMissing }) => {
                 </div>
             )}
 
-            {/* Submit Button */}
+            {/* Submit Button (the press is counted even when the browser stops an empty field) */}
             <button
                 type="submit"
+                onClick={() => reportStep('submit')}
                 disabled={submitting || mode === 'loading'}
                 className="w-full bg-black text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
             >
