@@ -10,15 +10,29 @@ const metaRetrySchema = new mongoose.Schema({
     lastError: { type: String }
 });
 
+// One piece of the order: a pack of 2 sets has 2 items, each with its own color and size
+const itemSchema = new mongoose.Schema({
+    color: { type: String },
+    size: { type: String },
+    // True while this piece is taken from stock (see services/stock.js)
+    stockTaken: { type: Boolean }
+}, { _id: false });
+
 const orderSchema = new mongoose.Schema({
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required: true
     },
+    items: [itemSchema],
+    // The first item (older orders only have this; kept for them and for the orders list)
     variant: {
         color: { type: String },
         size: { type: String }
+    },
+    // Where the order was placed: a landing page slug, or "p-<productId>" for the product page
+    source: {
+        landing: { type: String }
     },
     customer: {
         name: { type: String, required: true },
@@ -39,7 +53,7 @@ const orderSchema = new mongoose.Schema({
         }
     },
     pricing: {
-        itemPrice: { type: Number, required: true },
+        itemPrice: { type: Number, required: true }, // all the pieces (the pack price)
         shippingPrice: { type: Number, required: true },
         totalPrice: { type: Number, required: true },
         discount: { type: Number, default: 0 }
@@ -49,7 +63,7 @@ const orderSchema = new mongoose.Schema({
         enum: ORDER_STATUSES,
         default: 'Pending'
     },
-    // True while one unit of the ordered color/size is taken from stock (see services/stock.js)
+    // True while stock is taken for this order (see services/stock.js)
     stockReserved: { type: Boolean, default: false },
     // The parcel at ZR Express, kept up to date by ZR's webhooks (see services/zrParcels.js)
     delivery: {

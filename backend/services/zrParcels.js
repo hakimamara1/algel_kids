@@ -8,19 +8,26 @@ const { releaseStock } = require('./stock');
 const { env } = require('../config/env');
 const { HttpError } = require('../lib/httpError');
 const { normalizeWord } = require('../lib/text');
+const { orderItems, itemLabel } = require('../lib/orderItems');
 
 // 0661234567 -> +213661234567 (ZR wants international numbers)
 const toInternationalPhone = (phone) => `+213${String(phone).replace(/\D/g, '').replace(/^0/, '')}`;
 
 const clip = (text, max) => (text.length > max ? `${text.slice(0, max - 1)}…` : text);
 
-const productLine = (order) =>
-    [order.product?.title || 'Article', order.variant?.color, order.variant?.size].filter(Boolean).join(' – ');
+// "Jolie Blouse – Rose – 38", or for a pack "Uniforme – Navy 6 ans + Bordeaux 8 ans"
+const productLine = (order) => {
+    const title = order.product?.title || 'Article';
+    const items = orderItems(order);
+    if (items.length <= 1) return [title, items[0]?.color, items[0]?.size].filter(Boolean).join(' – ');
+    return `${title} – ${items.map(itemLabel).join(' + ')}`;
+};
 
 // The parcel as ZR's POST /parcels expects it. Stock stays with the shop: stockType "none".
 const buildParcel = (order, readyStateId) => {
     const isDesk = order.customer.deliveryType === 'desk';
     const line = productLine(order);
+    const quantity = Math.max(orderItems(order).length, 1);
     return {
         customer: {
             customerId: crypto.randomUUID(), // ZR accepts any id when the customer isn't registered with them
@@ -35,8 +42,8 @@ const buildParcel = (order, readyStateId) => {
         ...(isDesk && { hubId: order.customer.zr.hubId }),
         orderedProducts: [{
             productName: clip(line, 200),
-            unitPrice: order.pricing.itemPrice,
-            quantity: 1,
+            unitPrice: Math.round(order.pricing.itemPrice / quantity),
+            quantity,
             stockType: 'none',
         }],
         deliveryType: isDesk ? 'pickup-point' : 'home',

@@ -4,6 +4,7 @@ import ImageCarousel from '../components/ImageCarousel';
 import { getProduct } from '../lib/api';
 import { defaultColor, pickSize } from '../lib/variants';
 import { trackEvent } from '../utils/FacebookPixel';
+import { productPageKey, trackPageVisit } from '../lib/funnel';
 
 import ProductHeader from '../components/product/ProductHeader';
 import ProductVariants from '../components/product/ProductVariants';
@@ -49,6 +50,7 @@ const ProductDetails = () => {
                 setSelectedSize(pickSize(color));
                 setStatus('ready');
 
+                trackPageVisit(productPageKey(data._id), data._id);
                 trackEvent('ViewContent', {
                     content_ids: [data._id],
                     content_name: data.title,

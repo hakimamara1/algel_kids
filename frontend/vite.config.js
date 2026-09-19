@@ -1,11 +1,22 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
+import landingPages from './src/landings/landings.json'
+
+// index.html starts loading a landing page's product before React starts: it needs slug -> product id
+const landingProducts = () => ({
+  name: 'landing-products',
+  transformIndexHtml: (html) => html.replace(
+    '__LANDING_PRODUCTS__',
+    JSON.stringify(Object.fromEntries(Object.entries(landingPages).map(([slug, page]) => [slug, page.productId]))),
+  ),
+})
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
+    landingProducts(),
     // Add bundle visualizer in analyze mode
     mode === 'analyze' && visualizer({
       open: true,

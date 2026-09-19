@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import adminApi, { apiErrorMessage } from '../lib/adminApi';
 import OrderEditor from '../components/admin/OrderEditor';
+import { orderPieces } from '../lib/orderPieces';
+import landings from '../landings/landings.json';
 
 const PAGE_SIZE = 30;
 const STATUSES = ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Returned', 'Cancelled'];
@@ -12,6 +14,15 @@ const STATUS_STYLES = {
     Delivered: 'bg-green-100 text-green-600',
     Returned: 'bg-red-100 text-red-600',
 };
+
+// Where the order was placed: a landing page (by its name), or the product page
+const sourceName = (landing) => {
+    if (!landing) return null;
+    if (landings[landing]) return landings[landing].name;
+    return landing.startsWith('p-') ? 'Product page' : landing;
+};
+
+const pieceLabel = (piece) => [piece.color, piece.size].filter(Boolean).join(' / ');
 
 const META_EVENT_LABELS = { lead: 'Lead', purchase: 'Purchase', delivered: 'Delivered', returned: 'Returned', cancelled: 'Cancelled' };
 
@@ -356,9 +367,17 @@ const AdminOrders = () => {
                                                 )}
                                                 <div>
                                                     <p className="font-medium">{order.product?.title || 'Unknown Product'}</p>
-                                                    <span className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-600">
-                                                        {order.variant?.color} / {order.variant?.size}
+                                                    <span className="flex flex-wrap gap-1">
+                                                        {orderPieces(order).length > 1 && (
+                                                            <span className="text-xs font-bold bg-black text-white px-2 py-0.5 rounded">× {orderPieces(order).length}</span>
+                                                        )}
+                                                        {orderPieces(order).map((piece, index) => (
+                                                            <span key={index} className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-600">{pieceLabel(piece)}</span>
+                                                        ))}
                                                     </span>
+                                                    {sourceName(order.source?.landing) && (
+                                                        <span className="block mt-1 text-[11px] text-gray-400">From: {sourceName(order.source?.landing)}</span>
+                                                    )}
                                                     {order.status === 'Pending' && (
                                                         <span className="block mt-1 text-[11px] font-semibold text-amber-600">Check size on the call</span>
                                                     )}
@@ -461,8 +480,9 @@ const AdminOrders = () => {
                             <div className="bg-pink-50 p-4 rounded-xl">
                                 <h3 className="text-sm font-bold text-pink-900 mb-2 uppercase tracking-wide">Order Info</h3>
                                 <p><span className="text-pink-700">Product:</span> {selectedOrder.product?.title}</p>
-                                <p><span className="text-pink-700">Variant:</span> {selectedOrder.variant?.color} - {selectedOrder.variant?.size}</p>
+                                <p><span className="text-pink-700">{orderPieces(selectedOrder).length > 1 ? `Pieces (${orderPieces(selectedOrder).length}):` : 'Variant:'}</span> {orderPieces(selectedOrder).map(pieceLabel).join(' + ')}</p>
                                 <p><span className="text-pink-700">Price:</span> {selectedOrder.pricing.itemPrice} DA</p>
+                                {sourceName(selectedOrder.source?.landing) && <p><span className="text-pink-700">From:</span> {sourceName(selectedOrder.source?.landing)}</p>}
                                 <p><span className="text-pink-700">Shipping:</span> {selectedOrder.pricing.shippingPrice} DA</p>
                                 <div className="mt-2 pt-2 border-t border-pink-200 font-bold text-lg">
                                     Total: {selectedOrder.pricing.totalPrice} DA
@@ -483,7 +503,7 @@ const AdminOrders = () => {
                                 key={selectedOrder._id}
                                 order={selectedOrder}
                                 onSaved={(updated) => {
-                                    setSelectedOrder((prev) => (prev?._id === updated._id ? { ...prev, variant: updated.variant, customer: updated.customer } : prev));
+                                    setSelectedOrder((prev) => (prev?._id === updated._id ? { ...prev, items: updated.items, variant: updated.variant, customer: updated.customer } : prev));
                                     setReloadKey((key) => key + 1);
                                 }}
                             />

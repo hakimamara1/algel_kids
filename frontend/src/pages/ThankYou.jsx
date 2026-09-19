@@ -4,9 +4,17 @@ import { Link, useLocation } from 'react-router-dom';
 const MESSENGER_PAGE = 'https://www.messenger.com/t/113440880526598';
 const SHOP_PHONE = '0662241056';
 
+// "Uniforme · كحلي 6 سنوات + بوردو 8 سنوات" for a pack, "Jolie Blouse · Orange · 40" for one piece
+const productLine = (order, separator = ' · ') => {
+    if (order.items?.length > 1) {
+        return `${order.productTitle} × ${order.items.length}${separator}${order.items.map((item) => [item.color, item.size].filter(Boolean).join(' ')).join(' + ')}`;
+    }
+    return [order.productTitle, order.color, order.size].filter(Boolean).join(separator);
+};
+
 // Pre-filled Messenger message so the shop gets every detail in one tap
 const orderMessage = (order) => `طلب جديد! 🛍️
-المنتج: ${[order.productTitle, order.color, order.size].filter(Boolean).join(' - ')}
+المنتج: ${productLine(order, ' - ')}
 السعر: ${order.itemPrice} د.ج
 التوصيل: ${order.shippingPrice} د.ج (${order.deliveryType === 'home' ? 'توصيل للمنزل' : 'توصيل للمكتب'})
 الإجمالي: ${order.totalPrice} د.ج
@@ -49,7 +57,8 @@ const ThankYou = () => {
                 {order && (
                     <section className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 space-y-2 text-sm">
                         <h2 className="font-bold text-gray-900 mb-1">ملخص الطلب</h2>
-                        <Row label="المنتج" value={[order.productTitle, order.color, order.size].filter(Boolean).join(' · ')} />
+                        <Row label="المنتج" value={productLine(order)} />
+                        <Row label="السعر" value={`${order.itemPrice} د.ج`} />
                         <Row label="التوصيل" value={`${order.wilaya} · ${order.commune} (${order.deliveryType === 'home' ? 'للمنزل' : 'للمكتب'})`} />
                         {order.office && <Row label="المكتب" value={order.office} />}
                         <Row label="سعر التوصيل" value={`${order.shippingPrice} د.ج`} />

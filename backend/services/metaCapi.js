@@ -2,6 +2,7 @@
 // Rules: https://developers.facebook.com/docs/marketing-api/conversions-api/parameters
 const crypto = require('crypto');
 const { env } = require('../config/env');
+const { orderItems } = require('../lib/orderItems');
 
 const isConfigured = () => Boolean(env.meta.pixelId && env.meta.token);
 
@@ -38,9 +39,10 @@ const buildUserData = ({ customer = {}, tracking = {} }) => {
     return Object.fromEntries(Object.entries(userData).filter(([, value]) => value !== undefined && value !== ''));
 };
 
-// One event about one order. Value = product price (the shop's revenue; delivery goes to the courier).
+// One event about one order. Value = product or pack price (the shop's revenue; delivery goes to the courier).
 const buildEvent = ({ name, eventId, eventTime, order }) => {
     const productId = String(order.product?._id || order.product);
+    const quantity = Math.max(orderItems(order).length, 1);
     return {
         event_name: name,
         event_time: Math.floor(eventTime.getTime() / 1000),
@@ -54,8 +56,11 @@ const buildEvent = ({ name, eventId, eventTime, order }) => {
             content_ids: [productId],
             content_type: 'product',
             ...(order.product?.title && { content_name: order.product.title }),
-            num_items: 1,
+            contents: [{ id: productId, quantity }],
+            num_items: quantity,
             order_id: String(order._id),
+            // Which page sold it (landing slug, or "p-<productId>" for the product page)
+            ...(order.source?.landing && { landing_page: order.source.landing }),
         },
     };
 };

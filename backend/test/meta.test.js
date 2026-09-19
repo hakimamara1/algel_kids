@@ -100,8 +100,10 @@ test('placing an order sends one Lead with hashed customer data and the product 
         content_ids: [product._id.toString()],
         content_type: 'product',
         content_name: 'Jolie Blouse',
+        contents: [{ id: product._id.toString(), quantity: 1 }],
         num_items: 1,
         order_id: order._id,
+        landing_page: `p-${product._id}`,
     });
 
     const user = event.user_data;

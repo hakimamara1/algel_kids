@@ -16,6 +16,7 @@ const AdminProductEdit = () => {
     const [category, setCategory] = useState('girls-clothing');
     const [images, setImages] = useState([]); // Product level images
     const [colors, setColors] = useState([]); // Array of color objects
+    const [offers, setOffers] = useState([]); // Pack prices: [{ quantity, price }]
 
     // UI State
     const [loading, setLoading] = useState(false);
@@ -32,6 +33,7 @@ const AdminProductEdit = () => {
                 setCategory(data.category);
                 setImages(data.images || []);
                 setColors(data.colors || []);
+                setOffers(data.offers || []);
             })
             .catch((error) => {
                 console.error(error);
@@ -79,7 +81,11 @@ const AdminProductEdit = () => {
             description,
             category,
             images,
-            colors
+            colors,
+            // Empty rows are skipped; the server prices packs with these
+            offers: offers
+                .filter((offer) => offer.quantity !== '' && offer.price !== '')
+                .map((offer) => ({ quantity: Number(offer.quantity), price: Number(offer.price) }))
         };
 
         try {
@@ -94,6 +100,20 @@ const AdminProductEdit = () => {
             alert(apiErrorMessage(error, 'Action failed'));
             setLoading(false);
         }
+    };
+
+    // --- Pack offers (landing pages): the total price for 2, 3... pieces ---
+    const addOffer = () => {
+        const next = Math.min(5, Math.max(1, ...offers.map((offer) => Number(offer.quantity) || 1)) + 1);
+        setOffers([...offers, { quantity: next, price: '' }]);
+    };
+
+    const updateOffer = (index, field, value) => {
+        setOffers(offers.map((offer, i) => (i === index ? { ...offer, [field]: value } : offer)));
+    };
+
+    const removeOffer = (index) => {
+        setOffers(offers.filter((_, i) => i !== index));
     };
 
     // --- Color Management ---
@@ -179,6 +199,36 @@ const AdminProductEdit = () => {
                                 <textarea className="w-full p-2 border rounded mt-1" rows="3" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Pack offers */}
+                    <div className="bg-white p-6 rounded-lg shadow space-y-4">
+                        <div className="flex justify-between items-center border-b pb-2">
+                            <div>
+                                <h2 className="text-xl font-semibold">Pack offers</h2>
+                                <p className="text-sm text-gray-500">Total price for several pieces, used by landing pages (e.g. 2 pieces = 7000 DA). Without an offer, each piece costs the price above.</p>
+                            </div>
+                            <button type="button" onClick={addOffer} className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded whitespace-nowrap">+ Add Offer</button>
+                        </div>
+                        {offers.length === 0 && <p className="text-sm text-gray-400">No pack offers.</p>}
+                        {offers.map((offer, index) => {
+                            const regular = Number(price) * Number(offer.quantity);
+                            const saving = regular - Number(offer.price);
+                            return (
+                                <div key={index} className="flex flex-wrap items-end gap-3">
+                                    <label className="block">
+                                        <span className="block text-sm font-medium text-gray-700">Pieces</span>
+                                        <input type="number" min="2" max="5" className="w-24 p-2 border rounded mt-1" value={offer.quantity} onChange={(e) => updateOffer(index, 'quantity', e.target.value)} />
+                                    </label>
+                                    <label className="block">
+                                        <span className="block text-sm font-medium text-gray-700">Total price (DA)</span>
+                                        <input type="number" min="0" className="w-40 p-2 border rounded mt-1" value={offer.price} onChange={(e) => updateOffer(index, 'price', e.target.value)} />
+                                    </label>
+                                    {offer.price !== '' && saving > 0 && <span className="text-sm text-green-700 pb-2">Customer saves {saving} DA</span>}
+                                    <button type="button" onClick={() => removeOffer(index)} className="text-red-600 text-sm pb-2">Remove</button>
+                                </div>
+                            );
+                        })}
                     </div>
 
                     {/* Main Images */}

@@ -4,6 +4,8 @@ import { trackPageView } from './utils/FacebookPixel';
 import { getAdminToken, setAdminToken } from './lib/adminToken';
 // Ads land on product pages, so this page ships in the main bundle (saves a round trip)
 import ProductDetails from './pages/ProductDetails';
+// Landing pages for ad tests (/l/:slug): this small router loads each page's own code
+import LandingRoute from './landings/LandingRoute';
 
 // Lazy load the other pages
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -12,6 +14,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminOrders = lazy(() => import('./pages/AdminOrders'));
+const AdminLandings = lazy(() => import('./pages/AdminLandings'));
 const AdminProductEdit = lazy(() => import('./pages/AdminProductEdit'));
 
 // Loading fallback component
@@ -56,6 +59,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/l/:slug" element={<LandingRoute />} />
             <Route path="/merci" element={<ThankYou />} />
             <Route path="/confidentialite" element={<Privacy />} />
 
@@ -72,6 +76,13 @@ function App() {
               <RequireAdmin>
                 <AdminLayout>
                   <AdminOrders />
+                </AdminLayout>
+              </RequireAdmin>
+            } />
+            <Route path="/admin/landings" element={
+              <RequireAdmin>
+                <AdminLayout>
+                  <AdminLandings />
                 </AdminLayout>
               </RequireAdmin>
             } />
@@ -98,6 +109,7 @@ const AdminLayout = ({ children }) => {
       <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-6 sticky top-0 z-30">
         <a href="/admin" className="font-bold text-gray-900 hover:text-pink-500">Products</a>
         <a href="/admin/orders" className="font-bold text-gray-900 hover:text-pink-500">Orders</a>
+        <a href="/admin/landings" className="font-bold text-gray-900 hover:text-pink-500">Landing pages</a>
         <a href="/" className="ml-auto text-sm text-gray-500 hover:text-gray-900">View Shop</a>
         <button onClick={logout} className="text-sm text-gray-500 hover:text-gray-900">Log out</button>
       </div>

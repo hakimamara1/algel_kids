@@ -3,7 +3,7 @@ const { HttpError } = require('../lib/httpError');
 const { slugify } = require('../lib/slugify');
 
 // Only these fields can be set from the admin; anything else in the body is ignored
-const EDITABLE_FIELDS = ['title', 'slug', 'description', 'price', 'compareAtPrice', 'category', 'images', 'colors'];
+const EDITABLE_FIELDS = ['title', 'slug', 'description', 'price', 'compareAtPrice', 'category', 'images', 'colors', 'offers'];
 
 // Keeps fields that are present, so 0, '' and null can be saved
 const pickEditable = (body = {}) =>

@@ -9,19 +9,34 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
   <script>
-    // Ad visitors land on /product/:id. Start loading the product and its first photo now,
-    // in parallel with the JS bundle, instead of waiting for React to start.
-    // The photo URLs must match src/lib/cloudinary.js (GALLERY_WIDTHS / GALLERY_SIZES).
+    // Ad visitors land on /product/:id or on a landing page /l/:slug. Start loading the product and
+    // its first photo now, in parallel with the JS bundle, instead of waiting for React to start.
+    // The photo URLs must match src/lib/cloudinary.js (GALLERY_WIDTHS) and the pages' image sizes.
     (function () {
-      var match = location.pathname.match(/^\/product\/([a-f0-9]{24})\/?$/i);
-      if (!match || !window.fetch) return;
+      // slug -> product id, filled in at build time from src/landings/landings.json
+      var LANDING_PRODUCTS = __LANDING_PRODUCTS__;
+      var productMatch = location.pathname.match(/^\/product\/([a-f0-9]{24})\/?$/i);
+      var landingMatch = location.pathname.match(/^\/l\/([a-z0-9-]+)\/?$/);
+      var id = productMatch ? productMatch[1] : landingMatch && LANDING_PRODUCTS[landingMatch[1]];
+      if (!id || !window.fetch) return;
+
+      if (landingMatch) {
+        // Landing pages use the Tajawal font (loaded without blocking the first paint)
+        var font = document.createElement('link');
+        font.rel = 'stylesheet';
+        font.href = 'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap';
+        document.head.appendChild(font);
+      }
+
       var widths = [480, 640, 828, 1080];
+      // Must match the hero <img sizes> of the page (ProductDetails: 100vw, landing pages: HERO_SIZES)
+      var sizes = landingMatch ? '(min-width: 900px) 380px, 300px' : '100vw';
       function cld(url, w) {
         var parts = url.split('/upload/');
         if (url.indexOf('res.cloudinary.com') === -1 || parts.length !== 2) return url;
         return parts[0] + '/upload/f_auto,q_auto,c_limit,w_' + w + '/' + parts[1];
       }
-      var promise = fetch('/api/products?id=' + match[1])
+      var promise = fetch('/api/products?id=' + id)
         .then(function (res) {
           if (!res.ok) throw new Error(res.status);
           return res.json();
@@ -35,25 +50,28 @@
             link.as = 'image';
             link.setAttribute('fetchpriority', 'high');
             link.setAttribute('imagesrcset', widths.map(function (w) { return cld(images[0].url, w) + ' ' + w + 'w'; }).join(', '));
-            link.setAttribute('imagesizes', '100vw');
+            link.setAttribute('imagesizes', sizes);
             document.head.appendChild(link);
           }
           return product;
         })
         .catch(function () { return null; });
-      window.__earlyProduct = { id: match[1], promise: promise };
+      window.__earlyProduct = { id: id, promise: promise };
     })();
   </script>
 
   <!-- Meta Pixel: loads async and sends PageView right away, before React starts -->
   <script>
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1190930022111249');
-    fbq('track', 'PageView');
+    // Not on localhost (npm run dev, the demo): local tests never reach the real ads data
+    if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1190930022111249');
+      fbq('track', 'PageView');
+    }
   </script>
 
   <!-- Preconnect to external resources -->

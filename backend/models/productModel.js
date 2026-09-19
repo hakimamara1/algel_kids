@@ -18,6 +18,13 @@ const colorSchema = new mongoose.Schema({
     sizes: [sizeSchema]
 });
 
+// Pack offer: the total price for buying `quantity` pieces (e.g. 2 sets for 7000 DA).
+// Without an offer, N pieces cost N × price.
+const offerSchema = new mongoose.Schema({
+    quantity: { type: Number, required: true, min: 1, max: 5 },
+    price: { type: Number, required: true, min: 0 }
+}, { _id: false });
+
 const productSchema = new mongoose.Schema({
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
@@ -27,6 +34,7 @@ const productSchema = new mongoose.Schema({
     category: { type: String, default: 'girls-clothing' },
     images: [imageSchema],
     colors: [colorSchema],
+    offers: [offerSchema],
     createdAt: { type: Date, default: Date.now }
 });
 
