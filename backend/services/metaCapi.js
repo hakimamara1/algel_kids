@@ -6,6 +6,12 @@ const { orderItems } = require('../lib/orderItems');
 
 const isConfigured = () => Boolean(env.meta.pixelId && env.meta.token);
 
+// Meta's browser ids: fb.<domain level>.<time>.<click id>. Anything else (an old bad cookie,
+// a test link with "?fbclid=fbclid") is dropped: Meta refuses events whose click id was changed.
+const FBP_PATTERN = /^fb\.\d\.\d{10,}\.\d+$/;
+const FBC_PATTERN = /^fb\.\d\.\d{10,}\.[A-Za-z0-9_-]{20,}$/;
+const metaCookie = (value, pattern) => (pattern.test(String(value || '')) ? value : undefined);
+
 const sha256 = (value) => crypto.createHash('sha256').update(value).digest('hex');
 const hashed = (value) => (value ? [sha256(value)] : undefined);
 
@@ -33,8 +39,8 @@ const buildUserData = ({ customer = {}, tracking = {} }) => {
         external_id: hashed(phone),
         client_ip_address: tracking.ip,
         client_user_agent: tracking.userAgent,
-        fbp: tracking.fbp,
-        fbc: tracking.fbc,
+        fbp: metaCookie(tracking.fbp, FBP_PATTERN),
+        fbc: metaCookie(tracking.fbc, FBC_PATTERN),
     };
     return Object.fromEntries(Object.entries(userData).filter(([, value]) => value !== undefined && value !== ''));
 };

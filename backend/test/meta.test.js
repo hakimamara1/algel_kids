@@ -70,7 +70,7 @@ const placeOrder = (phone) => request(app)
         product: product._id.toString(),
         variant: { color: 'Rose', size: '38' },
         customer: customer(phone),
-        tracking: { fbp: 'fb.1.1700000000000.111', fbc: 'fb.1.1700000000000.AbCd', sourceUrl: 'https://algel-kids.vercel.app/product/abc?fbclid=AbCd' },
+        tracking: { fbp: 'fb.1.1700000000000.111', fbc: 'fb.1.1700000000000.IwcGRvZgVleHRuA2FlbQIxMAABHqTestClickId', sourceUrl: 'https://algel-kids.vercel.app/product/abc?fbclid=AbCd' },
     });
 const setStatus = (id, status) => request(app).put(`/api/orders/${id}/status`).set(authHeader()).send({ status });
 const confirmedOrder = async (phone) => {
@@ -114,7 +114,7 @@ test('placing an order sends one Lead with hashed customer data and the product 
     assert.deepEqual(user.ct, [sha('kouba')]);
     assert.deepEqual(user.country, [sha('dz')]);
     assert.equal(user.fbp, 'fb.1.1700000000000.111');
-    assert.equal(user.fbc, 'fb.1.1700000000000.AbCd');
+    assert.equal(user.fbc, 'fb.1.1700000000000.IwcGRvZgVleHRuA2FlbQIxMAABHqTestClickId');
     assert.equal(user.client_user_agent, 'Mozilla/5.0 (iPhone) Test');
     assert.ok(user.client_ip_address);
 
@@ -138,7 +138,7 @@ test('confirming sends one Purchase, even with two quick taps; shipping later se
     assert.equal(purchases[0].event.custom_data.value, 3500);
     // Browser details saved at order time are reused days later
     assert.equal(purchases[0].event.user_data.client_user_agent, 'Mozilla/5.0 (iPhone) Test');
-    assert.equal(purchases[0].event.user_data.fbc, 'fb.1.1700000000000.AbCd');
+    assert.equal(purchases[0].event.user_data.fbc, 'fb.1.1700000000000.IwcGRvZgVleHRuA2FlbQIxMAABHqTestClickId');
 });
 
 test('delivered, returned and cancelled send their own events', async () => {
@@ -208,4 +208,26 @@ test('the dashboard shows whether Meta is connected', async () => {
     await request(app).get('/api/admin/meta-status').expect(401);
     const res = await request(app).get('/api/admin/meta-status').set(authHeader()).expect(200);
     assert.deepEqual(res.body, { configured: true, pixelId: '123456789', testMode: true, retrying: 0 });
+});
+
+test('a click id that is not Meta\'s own (old cookie, "?fbclid=fbclid" test link) is never sent', async () => {
+    await request(app).post('/api/orders').send({
+        product: product._id.toString(),
+        variant: { color: 'Rose', size: '38' },
+        customer: customer('0770000009'),
+        tracking: {
+            fbp: 'fb.2.1789257218026.1234567890',
+            fbc: 'fb.2.1789257218026.fbclid', // the placeholder from a test link
+            sourceUrl: 'https://algel-kids.vercel.app/l/uniforme',
+        },
+    }).expect(201);
+    await settle(1);
+
+    const [lead] = named('Lead');
+    assert.equal(lead.event.user_data.fbc, undefined, 'the broken click id is dropped');
+    assert.equal(lead.event.user_data.fbp, 'fb.2.1789257218026.1234567890', 'the good one still goes');
+
+    // It is not even saved on the order, so a later Purchase cannot send it either
+    const saved = await Order.findOne({ 'customer.phone': '0770000009' }).lean();
+    assert.equal(saved.tracking.fbc, undefined);
 });
