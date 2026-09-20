@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { SHOP_PHONE } from '../lib/shop';
 
-const SHOP_PHONE = '0662241056';
+
 
 const Section = ({ title, children }) => (
     <section className="space-y-2">

@@ -2,5 +2,9 @@
     "uniforme": {
         "name": "Uniforme scolaire — A",
         "productId": "6aae888789c922f02f4a1dae"
+    },
+    "blouse": {
+        "name": "Blouse Plissé — Angels closet",
+        "productId": "6aa4b47be4092228b138061f"
     }
 }

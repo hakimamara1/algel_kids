@@ -2,8 +2,7 @@
 
 // e.g. '213661234567' (no + or spaces): the footer shows the WhatsApp link once it is set
 export const WHATSAPP_NUMBER = '';
-export const SHOP_PHONE = '0662241056';
-export const FACEBOOK_PAGE = 'https://web.facebook.com/profile.php?id=100071809980483';
+export { SHOP_PHONE, FACEBOOK_PAGE } from '../../lib/shop';
 
 export const content = {
     title: 'الدخول المدرسي بأناقة',

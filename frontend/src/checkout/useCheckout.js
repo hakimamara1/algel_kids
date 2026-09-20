@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createOrder, getDeliveryWilayas, getDeliveryWilaya } from '../lib/api';
 import { getMetaTracking } from '../lib/metaTracking';
 import { trackCheckoutStep } from '../lib/funnel';
+import { SHOP_PHONE } from '../lib/shop';
 import { trackEvent } from '../utils/FacebookPixel';
 
 // The order logic shared by every order form (product page, landing pages):
@@ -222,7 +223,7 @@ export const useCheckout = ({ product, items, itemPrice, landing, onSizeMissing 
         }
 
         if ((deliveryType === 'home' ? homePrice : deskPrice) == null) {
-            fail('unavailable', 'التوصيل غير متوفر لهذه البلدية. يرجى الاتصال بنا على 0662241056.');
+            fail('unavailable', `التوصيل غير متوفر لهذه البلدية. يرجى الاتصال بنا على ${SHOP_PHONE}.`);
             return;
         }
 
@@ -321,7 +322,7 @@ export const useCheckout = ({ product, items, itemPrice, landing, onSizeMissing 
             if (err.status === 409) {
                 fail('sold_out', 'عذراً، هذا المقاس نفد. يرجى اختيار مقاس آخر.');
             } else if (err.status === 429) {
-                fail('rate_limit', 'تم إرسال طلبات كثيرة. يرجى الاتصال بنا على 0662241056.');
+                fail('rate_limit', `تم إرسال طلبات كثيرة. يرجى الاتصال بنا على ${SHOP_PHONE}.`);
             } else {
                 fail('server', 'حدث خطأ ما. يرجى المحاولة مرة أخرى.');
             }

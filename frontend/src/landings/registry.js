@@ -6,6 +6,7 @@ import landings from './landings.json';
 // landings.json is also read by index.html (to start loading the product early) and by the dashboard.
 const PAGES = {
     uniforme: lazy(() => import('./uniforme/UniformeLanding')),
+    blouse: lazy(() => import('./blouse/BlouseLanding')),
 };
 
 export const findLanding = (slug) => {

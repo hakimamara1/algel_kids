@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { MESSENGER_PAGE, SHOP_PHONE } from '../lib/shop';
 
-const MESSENGER_PAGE = 'https://www.messenger.com/t/113440880526598';
-const SHOP_PHONE = '0662241056';
 
 // "Uniforme · كحلي 6 سنوات + بوردو 8 سنوات" for a pack, "Jolie Blouse · Orange · 40" for one piece
 const productLine = (order, separator = ' · ') => {

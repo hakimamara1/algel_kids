@@ -58,6 +58,7 @@ const fakeZr = http.createServer((req, res) => {
 // --- Demo products (photos from Cloudinary) ---
 const CLD = 'https://res.cloudinary.com/djakukf0r/image/upload';
 const photos = (...files) => files.map((file) => ({ publicId: file.split('/').pop().split('.')[0], url: `${CLD}/${file}` }));
+const BLOUSE_SIZES = ['38', '40', '42', '44'];
 const AGES = ['4 سنوات', '5 سنوات', '6 سنوات', '7 سنوات', '8 سنوات', '9 سنوات', '10 سنوات', '11 سنة', '12 سنة'];
 
 const seed = async () => {
@@ -74,6 +75,19 @@ const seed = async () => {
             { name: 'Bleu marine', hexCode: '#1F2F52', sizes: AGES.map((value) => ({ value, stock: 20 })), images: photos('v1789610607/malaksit-products/omuqa1ibb6u4n3d4mrrq.png', 'v1789610609/malaksit-products/ftz2tn6fltgpa6ksqpwq.png') },
             { name: 'Noir', hexCode: '#16161C', sizes: AGES.map((value) => ({ value, stock: 20 })), images: photos('v1789610610/malaksit-products/wircxkxmlqwbhrazx7xp.png', 'v1789610613/malaksit-products/iwzhrhecofw7osrhkudj.png') },
             { name: 'Bordeaux', hexCode: '#6B1F2A', sizes: AGES.map((value) => ({ value, stock: 20 })), images: photos('v1789610615/malaksit-products/qfudkumve87rghlaxgow.png') },
+        ],
+    });
+    await Product.create({
+        _id: new mongoose.Types.ObjectId(landings.blouse.productId),
+        title: 'Jolie Blouse ✨',
+        slug: 'jolie-blouse',
+        price: 3500,
+        offers: [{ quantity: 2, price: 6000 }, { quantity: 3, price: 8500 }],
+        description: 'DEMO copy of the real product',
+        images: photos('v1789924696/malaksit-landing/blouse/wxtevtgfsbnpgiwikl17.png'),
+        colors: [
+            { name: 'Bleu ciel', hexCode: '#9ACBEF', sizes: BLOUSE_SIZES.map((value) => ({ value, stock: 10 })), images: photos('v1789924702/malaksit-landing/blouse/kb07koikcm3uthnj1k0m.png') },
+            { name: 'Rose', hexCode: '#F074B4', sizes: BLOUSE_SIZES.map((value) => ({ value, stock: 10 })), images: photos('v1789924699/malaksit-landing/blouse/t5li0ixxwxgcnrz6npl7.png') },
         ],
     });
 };

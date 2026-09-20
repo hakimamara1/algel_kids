@@ -2,6 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import { getProduct } from '../lib/api';
 import { trackPageVisit } from '../lib/funnel';
+import { SHOP_PHONE } from '../lib/shop';
 import { trackEvent } from '../utils/FacebookPixel';
 import { findLanding } from './registry';
 
@@ -59,7 +60,7 @@ const LandingRoute = () => {
                 >
                     إعادة المحاولة
                 </button>
-                <a href="tel:0662241056" className="font-medium text-gray-800">أو اتصلي بنا: 0662241056</a>
+                <a href={`tel:${SHOP_PHONE}`} className="font-medium text-gray-800">أو اتصلي بنا: {SHOP_PHONE}</a>
             </div>
         );
     }
