@@ -3,7 +3,7 @@ const { HttpError } = require('../lib/httpError');
 const { slugify } = require('../lib/slugify');
 
 // Only these fields can be set from the admin; anything else in the body is ignored
-const EDITABLE_FIELDS = ['title', 'slug', 'description', 'price', 'compareAtPrice', 'category', 'images', 'colors', 'offers'];
+const EDITABLE_FIELDS = ['title', 'slug', 'description', 'price', 'compareAtPrice', 'category', 'images', 'colors', 'offers', 'listed'];
 
 // Keeps fields that are present, so 0, '' and null can be saved
 const pickEditable = (body = {}) =>
@@ -21,7 +21,7 @@ const uniqueSlug = async (text, excludeId) => {
 
 // @route   GET /api/products   (public)
 const getProducts = async (req, res) => {
-    const products = await Product.find().select('-description -__v').sort({ createdAt: -1 }).lean();
+    const products = await Product.find({ listed: { $ne: false } }).select('-description -__v').sort({ createdAt: -1 }).lean();
     res.json(products);
 };
 

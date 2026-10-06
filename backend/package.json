@@ -8,7 +8,8 @@
     "test": "node --test --test-concurrency=1 test/*.test.js",
     "zr:check": "node scripts/zrCheck.js",
     "zr:webhook": "node scripts/zrWebhook.js",
-    "demo": "node scripts/demo.js"
+    "demo": "node scripts/demo.js",
+    "ginseng:create": "node scripts/createGinseng.js"
   },
   "keywords": [],
   "author": "",

@@ -32,6 +32,8 @@ const productSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     compareAtPrice: { type: Number },
     category: { type: String, default: 'girls-clothing' },
+    // false = sold only through its own landing page, never shown in the shop list
+    listed: { type: Boolean, default: true },
     images: [imageSchema],
     colors: [colorSchema],
     offers: [offerSchema],

@@ -7,6 +7,7 @@ import landings from './landings.json';
 const PAGES = {
     uniforme: lazy(() => import('./uniforme/UniformeLanding')),
     blouse: lazy(() => import('./blouse/BlouseLanding')),
+    ginseng: lazy(() => import('./ginseng/GinsengLanding')),
 };
 
 export const findLanding = (slug) => {

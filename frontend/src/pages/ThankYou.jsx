@@ -3,10 +3,13 @@ import { Link, useLocation } from 'react-router-dom';
 import { MESSENGER_PAGE, SHOP_PHONE } from '../lib/shop';
 
 
-// "Uniforme · كحلي 6 سنوات + بوردو 8 سنوات" for a pack, "Jolie Blouse · Orange · 40" for one piece
+// "Uniforme × 2 · كحلي 6 سنوات + بوردو 8 سنوات" for a pack, "Jolie Blouse · Orange · 40" for one piece.
+// A pack of the same thing twice is named once: "GINSENG KIANPI PIL × 2 · علبة 60 كبسولة".
 const productLine = (order, separator = ' · ') => {
     if (order.items?.length > 1) {
-        return `${order.productTitle} × ${order.items.length}${separator}${order.items.map((item) => [item.color, item.size].filter(Boolean).join(' ')).join(' + ')}`;
+        const pieces = order.items.map((item) => [item.color, item.size].filter(Boolean).join(' '));
+        const detail = pieces.every((piece) => piece === pieces[0]) ? pieces[0] : pieces.join(' + ');
+        return [`${order.productTitle} × ${order.items.length}`, detail].filter(Boolean).join(separator);
     }
     return [order.productTitle, order.color, order.size].filter(Boolean).join(separator);
 };

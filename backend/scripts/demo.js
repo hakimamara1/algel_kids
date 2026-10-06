@@ -12,6 +12,7 @@ const { spawn } = require('node:child_process');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const landings = require('../../frontend/src/landings/landings.json');
+const { ginsengProduct } = require('./ginsengProduct');
 
 // frontend/.env uses http://localhost:5001. If your own backend already uses 5001, run the demo on another port:
 //   DEMO_PORT=5002 npm run demo   and   VITE_BACKEND_URL=http://localhost:5002 npx vite --port 5174
@@ -90,6 +91,7 @@ const seed = async () => {
             { name: 'Rose', hexCode: '#F074B4', sizes: BLOUSE_SIZES.map((value) => ({ value, stock: 10 })), images: photos('v1789924699/malaksit-landing/blouse/t5li0ixxwxgcnrz6npl7.png') },
         ],
     });
+    await Product.create(ginsengProduct());
 };
 
 (async () => {
