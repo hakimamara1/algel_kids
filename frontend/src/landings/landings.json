@@ -6,5 +6,9 @@
     "blouse": {
         "name": "Blouse Plissé — Angels closet",
         "productId": "6aa4b47be4092228b138061f"
+    },
+    "trench": {
+        "name": "Ensemble Trench — Angels closet",
+        "productId": "6b3c08e24f7a15d9be02771c"
     }
 }
