@@ -10,5 +10,9 @@
     "trench": {
         "name": "Ensemble Trench — Angels closet",
         "productId": "6b3c08e24f7a15d9be02771c"
+    },
+    "trench-coat": {
+        "name": "Trench Élégant — Angels closet",
+        "productId": "6b4d19f35a8b26e0cf138826"
     }
 }

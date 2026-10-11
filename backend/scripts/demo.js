@@ -13,6 +13,7 @@ const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const landings = require('../../frontend/src/landings/landings.json');
 const { trenchProduct } = require('./trenchProduct');
+const { trenchCoatProduct } = require('./trenchCoatProduct');
 
 // frontend/.env uses http://localhost:5001. If your own backend already uses 5001, run the demo on another port:
 //   DEMO_PORT=5002 npm run demo   and   VITE_BACKEND_URL=http://localhost:5002 npx vite --port 5174
@@ -92,6 +93,7 @@ const seed = async () => {
         ],
     });
     await Product.create(trenchProduct());
+    await Product.create(trenchCoatProduct());
 };
 
 (async () => {

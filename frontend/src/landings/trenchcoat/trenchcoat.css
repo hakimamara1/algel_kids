@@ -1,0 +1,828 @@
+/* "Trench Élégant" landing page — Angels closet (same design as the blouse page).
+   Only this page loads this file; every class starts with tc-. */
+
+.tc-page {
+    /* Warm neutrals only: the eight coat colours are the colour on this page,
+       so the ground stays quiet and the accent is the coat's own chocolate. */
+    --tc-sand: #F4EFE7;
+    --tc-surface: #FFFFFF;
+    --tc-charcoal: #2A231C;
+    --tc-muted: #6B6054;
+    --tc-accent: #4A3728;
+    --tc-accent-dark: #33251A;
+    --tc-tint: #EDE4D7;
+    --tc-line: #E3D9C9;
+    --tc-out: #6E6458;
+    --tc-out-bg: #EAE5DC;
+
+    min-height: 100vh;
+    background: var(--tc-sand);
+    color: var(--tc-charcoal);
+    font-family: 'Tajawal', system-ui, sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+}
+
+.tc-page h1,
+.tc-page h2,
+.tc-page h3 {
+    margin: 0;
+    font-family: 'Rakkas', 'Tajawal', serif;
+    font-weight: 400;
+}
+
+.tc-page p,
+.tc-page figure,
+.tc-page ul {
+    margin: 0;
+}
+
+.tc-page ul {
+    padding: 0;
+    list-style: none;
+}
+
+.tc-page img {
+    max-width: 100%;
+}
+
+.tc-page button,
+.tc-page input,
+.tc-page select,
+.tc-page textarea {
+    font-family: inherit;
+}
+
+.tc-page a {
+    color: var(--tc-accent);
+    text-decoration: none;
+}
+
+.tc-page a:hover {
+    color: var(--tc-accent-dark);
+}
+
+.tc-page :focus-visible {
+    outline: 2px solid var(--tc-accent);
+    outline-offset: 2px;
+}
+
+/* --- Shared pieces --- */
+
+.tc-section {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 36px 20px;
+}
+
+.tc-section-wide {
+    max-width: 1040px;
+}
+
+.tc-section h2 {
+    margin-bottom: 16px;
+    font-size: 23px;
+    text-align: center;
+    color: var(--tc-charcoal);
+    text-wrap: balance;
+}
+
+.tc-muted {
+    font-size: 14px;
+    color: var(--tc-muted);
+    text-align: center;
+}
+
+.tc-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 54px;
+    padding: 14px 20px;
+    border: 0;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.tc-btn-accent {
+    background: var(--tc-accent);
+    color: #fff;
+}
+
+.tc-btn-accent:hover {
+    background: var(--tc-accent-dark);
+}
+
+.tc-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* --- Hero --- */
+
+.tc-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 26px 20px 34px;
+    text-align: center;
+}
+
+.tc-logo {
+    width: 200px;
+    height: auto;
+}
+
+.tc-hero h1 {
+    margin-top: 14px;
+    font-size: 33px;
+    line-height: 1.35;
+    text-wrap: balance;
+}
+
+.tc-subtitle {
+    margin-top: 10px !important;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--tc-muted);
+}
+
+.tc-hero-photo {
+    width: 100%;
+    height: 470px;
+    margin-top: 24px;
+    object-fit: cover;
+    border-radius: 24px;
+    background: var(--tc-tint);
+    box-shadow: 0 10px 30px rgba(42, 33, 29, 0.1);
+}
+
+.tc-price {
+    margin-top: 24px;
+    font-size: 36px;
+    font-weight: 900;
+}
+
+.tc-price-note {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--tc-muted);
+}
+
+.tc-hero .tc-btn {
+    margin-top: 20px;
+}
+
+.tc-note {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 14px !important;
+    font-size: 12.5px;
+    color: var(--tc-muted);
+}
+
+.tc-note svg {
+    color: var(--tc-accent);
+    flex-shrink: 0;
+}
+
+/* --- Colors --- */
+
+.tc-colors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.tc-color-card {
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--tc-surface);
+    box-shadow: 0 2px 10px rgba(42, 33, 29, 0.06);
+}
+
+.tc-color-card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+}
+
+.tc-color-card.is-out img {
+    filter: grayscale(0.55);
+    opacity: 0.75;
+}
+
+.tc-color-card figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px 12px;
+}
+
+.tc-color-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.tc-tag {
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--tc-tint);
+    color: var(--tc-accent);
+    font-size: 11.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tc-tag.is-out {
+    background: var(--tc-out-bg);
+    color: var(--tc-out);
+}
+
+/* --- Sizes --- */
+
+.tc-sizes {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px !important;
+}
+
+.tc-sizes li {
+    min-width: 62px;
+    padding: 12px 10px;
+    border: 1px solid var(--tc-line);
+    border-radius: 14px;
+    background: var(--tc-surface);
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* --- Offers --- */
+
+.tc-offers {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.tc-offer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 16px 18px;
+    border: 1px solid var(--tc-line);
+    border-radius: 16px;
+    background: var(--tc-surface);
+    color: inherit;
+    text-align: right;
+    cursor: pointer;
+}
+
+.tc-offer.is-selected {
+    border: 2px solid var(--tc-accent);
+    background: #FFF8FA;
+}
+
+.tc-offer-name {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.tc-offer-price {
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--tc-accent);
+    white-space: nowrap;
+}
+
+.tc-offer-save {
+    grid-column: 1 / -1;
+    font-size: 12.5px;
+    color: var(--tc-muted);
+}
+
+/* --- Styling ideas --- */
+
+.tc-styles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.tc-style-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+    padding-bottom: 14px;
+    border-radius: 16px;
+    background: var(--tc-surface);
+    box-shadow: 0 2px 10px rgba(42, 33, 29, 0.06);
+}
+
+.tc-style-card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.tc-style-card h3 {
+    padding: 8px 12px 0;
+    font-size: 17px;
+    color: var(--tc-accent);
+}
+
+.tc-style-card p {
+    padding: 0 12px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--tc-muted);
+}
+
+.tc-with-label {
+    padding-top: 4px !important;
+    font-size: 12px !important;
+    font-weight: 700;
+    color: var(--tc-charcoal) !important;
+}
+
+.tc-with {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 12px;
+}
+
+.tc-with li {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--tc-tint);
+    font-size: 11.5px;
+    color: var(--tc-charcoal);
+}
+
+/* --- Gallery --- */
+
+.tc-gallery {
+    display: flex;
+    gap: 14px;
+    margin: 0 -20px;
+    padding: 4px 20px 8px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+}
+
+.tc-gallery::-webkit-scrollbar {
+    display: none;
+}
+
+.tc-gallery img {
+    flex-shrink: 0;
+    width: 210px;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 18px;
+    background: var(--tc-tint);
+    scroll-snap-align: start;
+}
+
+/* --- Order form --- */
+
+.tc-order {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 36px 20px;
+}
+
+.tc-order h2 {
+    font-size: 23px;
+    text-align: center;
+}
+
+.tc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 20px;
+    background: var(--tc-surface);
+    box-shadow: 0 2px 14px rgba(42, 33, 29, 0.07);
+}
+
+.tc-form-step {
+    margin-top: 6px !important;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--tc-accent);
+}
+
+.tc-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.tc-field label,
+.tc-label {
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.tc-field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+/* 16px text: iPhone doesn't zoom into the field */
+.tc-field input,
+.tc-field select,
+.tc-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 52px;
+    padding: 13px 14px;
+    border: 1px solid var(--tc-line);
+    border-radius: 14px;
+    background: var(--tc-surface);
+    color: var(--tc-charcoal);
+    font-size: 16px;
+}
+
+.tc-field textarea {
+    resize: vertical;
+}
+
+.tc-field select:disabled {
+    background: #F7F1EF;
+    color: #9C918C;
+}
+
+.tc-field input:focus,
+.tc-field select:focus,
+.tc-field textarea:focus {
+    border-color: var(--tc-accent);
+    outline: 2px solid var(--tc-tint);
+}
+
+.tc-hint {
+    font-size: 12.5px;
+    color: var(--tc-muted);
+}
+
+.tc-pills {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.tc-pills-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tc-pills button {
+    min-height: 48px;
+    padding: 10px 8px;
+    border: 1px solid var(--tc-line);
+    border-radius: 999px;
+    background: var(--tc-surface);
+    color: var(--tc-charcoal);
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tc-pills button[aria-pressed="true"] {
+    border-color: var(--tc-accent);
+    background: var(--tc-accent);
+    color: #fff;
+}
+
+.tc-pills button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.tc-piece {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 14px;
+    border: 1px solid var(--tc-line);
+    border-radius: 16px;
+}
+
+.tc-piece legend {
+    float: right;
+    width: 100%;
+    padding: 0;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--tc-charcoal);
+}
+
+.tc-piece-colors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tc-swatch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px 8px 14px;
+    border: 1px solid var(--tc-line);
+    border-radius: 999px;
+    background: var(--tc-surface);
+    color: var(--tc-charcoal);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.tc-swatch.is-selected {
+    border: 2px solid var(--tc-accent);
+    font-weight: 700;
+}
+
+.tc-swatch:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.tc-swatch-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.tc-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: var(--tc-tint);
+    font-size: 14px;
+}
+
+.tc-summary div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.tc-summary b {
+    white-space: nowrap;
+}
+
+.tc-summary-total {
+    padding-top: 10px;
+    border-top: 1px solid rgba(175, 43, 99, 0.25);
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.tc-error {
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #FBE7EC;
+    color: #8F1D3C;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.tc-spinner {
+    width: 22px;
+    height: 22px;
+    border: 3px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 999px;
+    animation: tc-spin 0.8s linear infinite;
+}
+
+@keyframes tc-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.tc-form-note,
+.tc-privacy {
+    font-size: 12.5px;
+    color: var(--tc-muted);
+    text-align: center;
+}
+
+.tc-privacy {
+    font-size: 11.5px;
+}
+
+.tc-privacy a {
+    text-decoration: underline;
+}
+
+/* --- FAQ --- */
+
+.tc-faq {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tc-faq details {
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--tc-surface);
+    box-shadow: 0 2px 10px rgba(42, 33, 29, 0.06);
+}
+
+.tc-faq summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 52px;
+    padding: 14px 18px;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+}
+
+.tc-faq summary::-webkit-details-marker {
+    display: none;
+}
+
+.tc-faq-sign {
+    color: var(--tc-accent);
+    font-size: 18px;
+    transition: transform 0.2s;
+}
+
+.tc-faq details[open] .tc-faq-sign {
+    transform: rotate(45deg);
+}
+
+.tc-faq details p {
+    padding: 0 18px 16px;
+    font-size: 13.5px;
+    color: var(--tc-muted);
+}
+
+/* --- Footer --- */
+
+.tc-footer {
+    padding: 30px 20px 26px;
+    text-align: center;
+    color: var(--tc-muted);
+}
+
+.tc-footer img {
+    width: 140px;
+    height: auto;
+}
+
+.tc-footer p {
+    margin-top: 8px !important;
+    font-size: 13px;
+}
+
+.tc-copy {
+    font-size: 11.5px;
+    opacity: 0.8;
+}
+
+/* --- Desktop --- */
+
+@media (min-width: 900px) {
+    .tc-hero,
+    .tc-section,
+    .tc-order {
+        max-width: 720px;
+    }
+
+    .tc-hero h1 {
+        font-size: 44px;
+    }
+
+    .tc-hero-photo {
+        width: 420px;
+        height: 560px;
+    }
+
+    .tc-hero .tc-btn,
+    .tc-offers + .tc-btn {
+        max-width: 420px;
+    }
+
+    .tc-section h2 {
+        font-size: 30px;
+    }
+
+    .tc-colors,
+    .tc-styles {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .tc-gallery {
+        justify-content: center;
+        margin: 0;
+    }
+
+    .tc-gallery img {
+        width: 260px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tc-faq-sign {
+        transition: none;
+    }
+
+    .tc-spinner {
+        animation-duration: 2s;
+    }
+}
+
+/* The eight colours side by side, in place of the blouse page's photo gallery */
+.tc-chart {
+    display: block;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    border-radius: 18px;
+}
+
+/* The coat photos are shot on near-white, so on a light page their edges disappear.
+   These two sections sit on a deeper warm field and every coat reads as its own card.
+   The band is full-bleed while the content keeps the section's own max-width. */
+.tc-on-tint {
+    position: relative;
+    max-width: none;
+    padding-inline: 0;
+}
+
+.tc-on-tint::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--tc-tint);
+    z-index: 0;
+}
+
+.tc-on-tint > * {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    margin-inline: auto;
+    padding-inline: 20px;
+}
+
+.tc-section-wide.tc-on-tint > * {
+    max-width: 1040px;
+}
+
+/* A white card behind each coat, so the photo keeps its own clean ground */
+.tc-on-tint .tc-color-card {
+    background: var(--tc-surface);
+    border: 1px solid var(--tc-line);
+}
+
+.tc-on-tint .tc-chart {
+    background: var(--tc-surface);
+    padding: 12px;
+}
+
+/* Follow the page's own widths: the band is full-bleed, its content is not.
+   Without this the mobile 480px cap would survive on desktop and squeeze the
+   four-column colour grid into cards too small to judge a colour by. */
+@media (min-width: 900px) {
+    .tc-on-tint > * {
+        max-width: 720px;
+    }
+
+    .tc-section-wide.tc-on-tint > * {
+        max-width: 1040px;
+    }
+}

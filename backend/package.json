@@ -9,7 +9,8 @@
     "zr:check": "node scripts/zrCheck.js",
     "zr:webhook": "node scripts/zrWebhook.js",
     "demo": "node scripts/demo.js",
-    "trench:create": "node scripts/createTrench.js"
+    "trench:create": "node scripts/createTrench.js",
+    "trenchcoat:create": "node scripts/createTrenchCoat.js"
   },
   "keywords": [],
   "author": "",
