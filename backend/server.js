@@ -60,3 +60,4 @@ start().catch((err) => {
     logger.fatal({ err }, 'Startup failed');
     process.exit(1);
 });
+

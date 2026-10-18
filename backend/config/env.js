@@ -11,7 +11,7 @@ const env = {
     adminTokenSecret: process.env.ADMIN_TOKEN_SECRET,
     allowedOrigins: process.env.ALLOWED_ORIGINS
         ? list(process.env.ALLOWED_ORIGINS)
-        : ['https://algel-kids.vercel.app', 'http://localhost:5173', 'http://localhost:4174'],
+        : ['https://algel-kids.vercel.app', 'http://localhost:5173', 'http://localhost:4174', 'http://10.40.182.128:5173'],
     loginRateLimit: Number(process.env.LOGIN_RATE_LIMIT) || 5,
     orderRateLimit: Number(process.env.ORDER_RATE_LIMIT) || 10, // per phone number, per hour
     orderIpRateLimit: Number(process.env.ORDER_IP_RATE_LIMIT) || 100, // per connection, per hour

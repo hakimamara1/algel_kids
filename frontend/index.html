@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Angel Kids</title>
+  <title>algeria_shop</title>
   <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
@@ -64,11 +64,15 @@
   <script>
     // Not on localhost (npm run dev, the demo): local tests never reach the real ads data
     if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
-      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      !function (f, b, e, v, n, t, s) {
+        if (f.fbq) return; n = f.fbq = function () {
+          n.callMethod ?
+          n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+        }; if (!f._fbq) f._fbq = n;
+        n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0;
+        t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s)
+      }(window,
+        document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
       fbq('init', '1190930022111249');
       fbq('track', 'PageView');
     }
@@ -82,7 +86,8 @@
   <link rel="dns-prefetch" href="%VITE_BACKEND_URL%">
 
   <!-- Cairo as one variable font (weights 400-800). Loaded without blocking the first paint. -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400..800&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400..800&display=swap" media="print"
+    onload="this.media='all'">
   <noscript>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400..800&display=swap">
   </noscript>
