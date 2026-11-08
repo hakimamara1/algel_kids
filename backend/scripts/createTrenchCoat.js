@@ -5,7 +5,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Product = require('../models/productModel');
-const { trenchCoatProduct, STOCK_PER_COLOR } = require('./trenchCoatProduct');
+const { trenchCoatProduct, STOCK_PER_SIZE, SIZES } = require('./trenchCoatProduct');
 
 const show = (product) => {
     const stock = (product.colors || []).flatMap((color) => color.sizes || []).reduce((total, size) => total + size.stock, 0);
@@ -13,7 +13,8 @@ const show = (product) => {
     console.log(`  title   ${product.title}`);
     console.log(`  price   ${product.price} DA  (2 pieces ${product.offers?.[0]?.price}, 3 pieces ${product.offers?.[1]?.price})`);
     console.log(`  colors  ${(product.colors || []).length}: ${(product.colors || []).map((color) => color.name).join(', ')}`);
-    console.log(`  stock   ${stock} pieces (${STOCK_PER_COLOR} per colour, one size)`);
+    console.log(`  sizes   ${SIZES.join(', ')}`);
+    console.log(`  stock   ${stock} pieces (${STOCK_PER_SIZE} per size per colour)`);
 };
 
 (async () => {

@@ -18,6 +18,7 @@ const scrollGently = (element, block = 'start') => {
 };
 
 const colorLabel = (color) => content.colorLabels[color?.name] || color?.name || '';
+const allSizes = (product) => [...new Set((product.colors || []).flatMap((color) => (color.sizes || []).map((size) => size.value)))];
 
 const TruckIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" aria-hidden="true">
@@ -152,7 +153,7 @@ const TrenchCoatLanding = ({ slug, product }) => {
             <section className="tc-section" aria-labelledby="tc-sizes-title">
                 <h2 id="tc-sizes-title">{content.sizesTitle}</h2>
                 <ul className="tc-sizes">
-                    <li>{content.sizeStandard}</li>
+                    {allSizes(product).map((size) => <li key={size}>{size}</li>)}
                 </ul>
                 <p className="tc-muted">{content.sizesNote}</p>
             </section>
@@ -191,10 +192,23 @@ const TrenchCoatLanding = ({ slug, product }) => {
                     src={cldUrl(images.chart, 828)}
                     srcSet={cldSrcSet(images.chart, [480, 640, 828])}
                     sizes="(min-width: 900px) 760px, 92vw"
-                    alt="الألوان الثمانية للمعطف جنبًا إلى جنب"
+                    alt="الألوان الثلاثة للمعطف جنبًا إلى جنب مع الطول والتفاصيل"
                     loading="lazy"
                     decoding="async"
                 />
+                <div className="tc-gallery">
+                    {content.gallery.map((image, index) => (
+                        <img
+                            key={image}
+                            src={cldUrl(image, 480)}
+                            srcSet={cldSrcSet(image, [320, 480, 640])}
+                            sizes="(min-width: 900px) 260px, 60vw"
+                            alt={`${content.pageTitle} ${index + 1}`}
+                            loading="lazy"
+                            decoding="async"
+                        />
+                    ))}
+                </div>
             </section>
 
             {/* Order form */}
